@@ -176,3 +176,7 @@ const info = await getEthscriptionDetailed('444', 'info');
 const blobscription = await getEthscriptionDetailed('6040646', 'attachment');
 // => { result: Uint8Array, headers }
 ```
+
+## License
+
+Released under the MPL-2.0 license.
