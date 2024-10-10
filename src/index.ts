@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MPL-2.0
+
 import { BASE_API_URL, CACHE_TTL } from './constants.ts';
 import {
   bytes2hex,

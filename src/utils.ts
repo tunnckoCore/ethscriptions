@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MPL-2.0
+
 import { CacheHeaders } from 'cdn-cache-control';
 
 import { BASE_API_URL } from './constants.ts';
