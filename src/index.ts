@@ -135,8 +135,9 @@ export async function getDigestForData(
   const isRawData = isUint8 ? false : input?.startsWith('data:');
   const isHexData = isUint8 ? false : input?.startsWith('0x646174613a');
   const isB64Data = !isUint8 && !isRawData && !isHexData;
+  const isValid = [isUint8, isRawData, isHexData, isB64Data].includes(true);
 
-  if (!isUint8 || !isRawData || !isHexData || !isB64Data) {
+  if (!isValid) {
     return {
       ok: false,
       error: {
