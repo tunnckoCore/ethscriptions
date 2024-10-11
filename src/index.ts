@@ -7,7 +7,6 @@ import type {
   EnumAllDetailed,
   EthscriptionBase,
   EthscriptionTransfer,
-  NotOkShape,
   NumbersResult,
   OkShape,
   OwnersResult,
@@ -40,7 +39,7 @@ export async function checkExists(sha: string, options?: any): Promise<Result<Ch
         message: 'Invalid SHA-256 hash, must be 64 hex characters long, or 66 if 0x-prefixed',
         httpStatus: 400,
       },
-    } as NotOkShape;
+    };
   }
 
   const baseresp: any = await fetch(`${opts.baseURL}/ethscriptions/exists/0x${sha}`);
@@ -52,7 +51,7 @@ export async function checkExists(sha: string, options?: any): Promise<Result<Ch
         message: 'Cannot check if ethscription exists on the upstream api',
         httpStatus: baseresp.status,
       },
-    } as NotOkShape;
+    };
   }
 
   const resp = await baseresp.json();
@@ -61,15 +60,17 @@ export async function checkExists(sha: string, options?: any): Promise<Result<Ch
     const eth = resp.result.ethscription;
 
     return {
+      ok: true,
       result: { exists: true, ethscription: normalizeResult(eth, opts) } as CheckExistResult,
       headers: opts.headers || getHeaders(opts.cacheTtl ?? CACHE_TTL),
-    } as OkShape<CheckExistResult>;
+    };
   }
 
   return {
+    ok: true,
     result: { exists: false } as CheckExistResult,
     headers: opts.headers || getHeaders(opts.cacheTtl ?? CACHE_TTL),
-  } as OkShape<CheckExistResult>;
+  };
 }
 
 export async function resolveUser(val: string, options?: any): Promise<Result<ResolveUserResult>> {
@@ -82,14 +83,15 @@ export async function resolveUser(val: string, options?: any): Promise<Result<Re
     return {
       ok: false,
       error: { message: `Cannot resolve ${val}`, httpStatus: 404 },
-    } as NotOkShape;
+    };
   }
 
-  const result = resolveName
+  const result: ResolveUserResult = resolveName
     ? { name: resolved as string, address: val as `0x${string}` }
     : { name: val as string, address: resolved as `0x${string}` };
 
   return {
+    ok: true,
     result,
     headers: opts.headers || getHeaders(opts.cacheTtl ?? 3600),
   } as OkShape<ResolveUserResult>;
@@ -108,7 +110,7 @@ export async function getUserProfile(
   });
 
   if (!res.ok) {
-    return res as NotOkShape;
+    return res;
   }
 
   const data = Array.isArray(res.result)
@@ -116,6 +118,7 @@ export async function getUserProfile(
     : [normalizeResult(res.result, { with: 'content_uri' })];
 
   return {
+    ok: true,
     result: {
       latest: data[0],
       previous: data.slice(1) || [],
@@ -141,7 +144,7 @@ export async function getDigestForData(
         message: `Invalid data, must be a data URI, as Uint8Array encoded data URI, or base64 / hex encoded dataURI string`,
         httpStatus: 400,
       },
-    } as NotOkShape;
+    };
   }
 
   try {
@@ -162,16 +165,18 @@ export async function getDigestForData(
       const resp: any = await checkExists(sha, opts);
 
       if (!resp.ok) {
-        return resp as NotOkShape;
+        return resp;
       }
 
       return {
+        ok: true,
         result: { sha, hex: `0x${hexed}`, input: inputData, ...resp.result } as DigestResult,
         headers: opts.headers || getHeaders(opts.cacheTtl ?? 300),
       } as OkShape<DigestResult>;
     }
 
     return {
+      ok: true,
       result: { sha, hex: `0x${hexed}`, input: inputData } as Omit<
         DigestResult,
         'exists' | 'ethscription'
@@ -185,7 +190,7 @@ export async function getDigestForData(
         message: `Failure in SHA generation: ${err.toString()}`,
         httpStatus: 400,
       },
-    } as NotOkShape;
+    };
   }
 }
 
@@ -224,14 +229,15 @@ export async function getAllEthscriptions(options: any): Promise<Result<Ethscrip
   const data: any = await upstreamFetcher(options);
 
   if (!data.ok) {
-    return data as NotOkShape;
+    return data;
   }
 
   return {
+    ok: true,
     result: data.result.map((x: any) => normalizeResult(x, options)) as EthscriptionBase[],
     pagination: data.pagination,
     headers: opts.headers || getHeaders(opts.cacheTtl ?? 15),
-  } as OkShape<EthscriptionBase[]>;
+  };
 }
 
 // optionally pass `with` and `only` filters/params like `with=content_uri` or `only=content_uri,creator,transaction_hash`
@@ -242,10 +248,8 @@ export async function getEthscriptionById(
   return getEthscriptionDetailed(id, 'meta', options);
 }
 
-// COPILOT: the fucking idea, is to be able to have different response types,
-// in the returned `{ result }` based on the passed `type` argument which can be of type `DetailTyes`.
-// The fvckin shit should be working by `T extends DetailTypes` then in the return type Promise<Result<T>>,
-// and should not error in the return statements
+// NOTE: careful changing result fields here, because of the `as ResultDetailed<T>` assertion
+// we can footgun ourselves but it's required to be able to have editor complitions!
 export async function getEthscriptionDetailed<T extends EnumAllDetailed>(
   id: string,
   type: T,
@@ -255,14 +259,14 @@ export async function getEthscriptionDetailed<T extends EnumAllDetailed>(
     return {
       ok: false,
       error: { message: 'The `type` argument is required ', httpStatus: 500 },
-    } as NotOkShape;
+    };
   }
 
   const opts = { ...options };
   const data: any = await upstreamFetcher(opts, id);
 
   if (!data.ok) {
-    return data as NotOkShape;
+    return data;
   }
 
   const result = normalizeResult(data.result, opts);
@@ -295,6 +299,8 @@ export async function getEthscriptionDetailed<T extends EnumAllDetailed>(
   if (/owner|creator|receiver|previous|initial/i.test(type)) {
     // use `data.result` because transfers does not exists in `result` by default
     const transfers = normalizeAndSortTransfers(data.result.ethscription_transfers);
+
+    // NOTE: careful changing fields here, because of the `as ResultDetailed<T>` we can actually footgun
     return {
       ok: true,
       result: {
@@ -323,8 +329,10 @@ export async function getEthscriptionDetailed<T extends EnumAllDetailed>(
         block_number_fmt: numfmt(result.block_number),
         transaction_index: result.transaction_index,
         event_log_index: result.event_log_index,
-        ethscription_number: result.ethscription_number,
-        ethscription_number_fmt: numfmt(result.ethscription_number),
+        ethscription_number: data.result.ethscription_number ?? null,
+        ethscription_number_fmt: data.result.ethscription_number
+          ? numfmt(data.result.ethscription_number ?? '')
+          : '',
         ethscription_transfers: String(
           normalizeAndSortTransfers(data.result.ethscription_transfers).filter(
             (x) => x.is_esip0 === false,
@@ -358,14 +366,14 @@ export async function getEthscriptionDetailed<T extends EnumAllDetailed>(
             'No attachment for this ethscription, it is not an ESIP-8 compatible Blobscription',
           httpStatus: 404,
         },
-      } as NotOkShape;
+      };
     }
 
     // fetch the attachment content directly from upstream
     const res: any = await upstreamFetcher(opts, `${id}/attachment`);
 
     if (!res.ok) {
-      return res as NotOkShape;
+      return res;
     }
 
     return {
@@ -380,11 +388,5 @@ export async function getEthscriptionDetailed<T extends EnumAllDetailed>(
   return {
     ok: false,
     error: { message: 'Invalid request', httpStatus: 400 },
-  } as NotOkShape;
-}
-
-const res = await getEthscriptionDetailed('12', 'transfer');
-
-if (res.ok) {
-  console.log(res.result);
+  };
 }

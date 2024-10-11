@@ -89,7 +89,7 @@ const ensUser = await resolveUser('dubie.eth'); // ens
 const ensUser2 = await resolveUser('barry.wgw.lol'); // off-chain ens
 const ensUser3 = await resolveUser('mfers.base.eth');
 const ethscriptionName = await resolveUser('wgw'); // => wgw's address (0xA20C...)
-const creatorOfEthscriptionName = await resolveUser('wgw', true); // => hirsh's address (0x205...)
+const creatorOfEthscriptionName = await resolveUser('wgw', { checkCreator: true }); // => hirsh's address (0x205...)
 const ethscriptionName = await resolveUser('59.eths');
 const ethscriptionName = await resolveUser('ordex.tree');
 

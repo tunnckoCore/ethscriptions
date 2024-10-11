@@ -64,7 +64,7 @@ export type NumbersResult = {
   block_number_fmt: string;
   transaction_index: `${number}`;
   event_log_index: `${number}` | null;
-  ethscription_number: `${number}`;
+  ethscription_number: `${number}` | null;
   ethscription_number_fmt: string;
   ethscription_transfers: `${number}`;
 };
@@ -157,108 +157,3 @@ export type DetailedMap<T extends EnumAllDetailed> = {
 
 export type ResultDetailed<T extends EnumAllDetailed> = OkShape<DetailedMap<T>> | NotOkShape;
 export type Result<T> = OkShape<T> | NotOkShape;
-
-// Define the function with a simplified return type
-// function foobar<T extends EnumAllDetailed>(type: T): ResultDetailed<T> {
-//   switch (type) {
-//     case 'meta':
-//     case 'metadata': {
-//       return {
-//         ok: true,
-//         result: eth as EthscriptionBase,
-//       } as OkShape<DetailedMap<T>>;
-//     }
-
-//     case 'data':
-//     case 'content': {
-//       return {
-//         ok: true,
-//         result: new Uint8Array(123),
-//       } as OkShape<DetailedMap<T>>;
-//     }
-
-//     case 'owner':
-//     case 'owners':
-//     case 'initial':
-//     case 'previous':
-//     case 'creator':
-//     case 'receiver': {
-//       return {
-//         ok: true,
-//         result: {
-//           latest_transfer_timestamp: '123',
-//           latest_transfer_datetime: '123',
-//           latest_transfer_block: '123',
-//           creator: '0x123',
-//           initial: '0x123',
-//           current: '0x123',
-//           previous: '0x123',
-//         } as OwnersResult,
-//       } as OkShape<DetailedMap<T>>;
-//     }
-
-//     case 'number':
-//     case 'numbers':
-//     case 'info':
-//     case 'index':
-//     case 'stats': {
-//       return {
-//         ok: true,
-//         result: {
-//           block_timestamp: '123',
-//           block_datetime: '123',
-//           block_blockhash: '0x123',
-//           block_number: '123',
-//           block_number_fmt: '123',
-//           transaction_index: '123',
-//           event_log_index: '123',
-//           ethscription_number: '123',
-//           ethscription_number_fmt: '123',
-//           ethscription_transfers: '123',
-//         } as NumbersResult,
-//       } as OkShape<DetailedMap<T>>;
-//     }
-
-//     case 'transfer':
-//     case 'transfers': {
-//       return {
-//         ok: true,
-//         result: [
-//           {
-//             transaction_hash: '0x123',
-//             from_address: '0x123',
-//             to_address: '0x123',
-//             block_number: '123',
-//             block_timestamp: '123',
-//             block_blockhash: '0x123',
-//             event_log_index: '123',
-//             transaction_index: '123',
-//             enforced_previous_owner: '0x123',
-//             is_esip0: true,
-//             is_esip1: true,
-//             is_esip2: true,
-//           },
-//         ] as EthscriptionTransfer[],
-//       } as OkShape<DetailedMap<T>>;
-//     }
-
-//     case 'attach':
-//     case 'attachment':
-//     case 'blob': {
-//       return {
-//         ok: true,
-//         result: new Uint8Array(123),
-//       } as OkShape<DetailedMap<T>>;
-//     }
-
-//     default: {
-//       return {
-//         ok: false,
-//         error: {
-//           message: 'Unknown type',
-//           httpStatus: 400,
-//         },
-//       } as NotOkShape;
-//     }
-//   }
-// }
