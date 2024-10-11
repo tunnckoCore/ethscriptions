@@ -55,7 +55,7 @@
     "tag": "latest"
   },
   "scripts": {
-    "build": "tsup --target es2023",
+    "build": "tsup",
     "prepublishOnly": "bun run build",
     "test": "bun run example.ts",
     "xxbuild": "rm -rf dist && bun build src/index.ts src/utils.ts --outdir dist --packages=external"

@@ -1,6 +1,7 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
+  target: 'es2023',
   entry: ['src/index.ts', 'src/utils.ts'],
   splitting: false,
   clean: true,
