@@ -1,6 +1,6 @@
 {
   "name": "ethscriptions",
-  "version": "0.4.7",
+  "version": "0.5.0",
   "license": "MPL-2.0",
   "description": "Library with utility functions for Ethscriptions. Supports for fetching user profiles, filtering ethscriptions, and resolving names & ENS builtin",
   "author": "wgw <wgw@wgw.lol>",
@@ -15,17 +15,30 @@
   },
   "type": "module",
   "exports": {
-    ".": "./dist/index.js",
-    "./index.js": "./dist/index.js",
-    "./index.mjs": "./dist/index.js",
-    "./utils": "./dist/utils.js",
-    "./utils.js": "./dist/utils.js",
-    "./index.ts": "./src/index.ts",
-    "./utils.ts": "./src/utils.ts",
-    "./types": "./src/types.ts",
-    "./types.ts": "./src/types.ts"
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./utils": {
+      "types": "./dist/utils.d.ts",
+      "default": "./dist/utils.js"
+    },
+    "./utils.js": {
+      "types": "./dist/utils.d.ts",
+      "default": "./dist/utils.js"
+    },
+    "./index.ts": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./utils.ts": {
+      "types": "./src/utils.ts",
+      "default": "./src/utils.ts"
+    }
   },
   "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "files": [
     "src",
     "dist"
@@ -42,19 +55,22 @@
     "tag": "latest"
   },
   "scripts": {
-    "build": "rm -rf dist && bun build src/index.ts src/utils.ts --outdir dist --packages=external",
+    "build": "tsup --target es2023",
     "prepublishOnly": "bun run build",
-    "test": "bun run example.ts"
+    "test": "bun run example.ts",
+    "xxbuild": "rm -rf dist && bun build src/index.ts src/utils.ts --outdir dist --packages=external"
   },
   "dependencies": {
     "cdn-cache-control": "^1.1.0"
   },
   "devDependencies": {
     "@types/bun": "latest",
-    "eslint-config-tunnckocore": "^7.0.1"
+    "eslint-config-tunnckocore": "^7.0.1",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.3"
   },
   "peerDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.6.3"
   },
   "packageManager": "bun@1.1.30"
 }

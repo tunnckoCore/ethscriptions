@@ -436,3 +436,12 @@ export function bytes2hex(bytes: Uint8Array) {
 export function isAddress(val: string) {
   return Boolean(val && val.startsWith('0x') && val.length === 42);
 }
+
+export function isHex(val: string, prefixed = false) {
+  return Boolean(
+    val &&
+      /^[\dA-Fa-f]+$/.test(val) &&
+      val.length % 2 === 0 &&
+      (prefixed ? val.startsWith('0x') : true),
+  );
+}

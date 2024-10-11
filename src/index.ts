@@ -20,6 +20,7 @@ import {
   getHeaders,
   hex2bytes,
   isAddress,
+  isHex,
   namesResolver,
   normalizeAndSortTransfers,
   normalizeResult,
@@ -127,21 +128,23 @@ export async function getUserProfile(
 }
 
 export async function getDigestForData(
-  input: string | `0x${string}` | Uint8Array,
+  input: `data:${string}` | `0x${string}` | Uint8Array,
   options?: any,
 ): Promise<Result<DigestResult>> {
   const opts = { ...options };
   const isUint8 = input instanceof Uint8Array;
   const isRawData = isUint8 ? false : input?.startsWith('data:');
-  const isHexData = isUint8 ? false : input?.startsWith('0x646174613a');
-  const isB64Data = !isUint8 && !isRawData && !isHexData;
-  const isValid = [isUint8, isRawData, isHexData, isB64Data].includes(true);
+  const isHexData = isUint8
+    ? false
+    : isHex(input?.replace(/^0x/, '')) && input?.replace(/^0x/, '')?.startsWith('646174613a');
+
+  const isValid = [isUint8, isRawData, isHexData].includes(true);
 
   if (!isValid) {
     return {
       ok: false,
       error: {
-        message: `Invalid data, must be a data URI, as Uint8Array encoded data URI, or base64 / hex encoded dataURI string`,
+        message: `Invalid data, must be a data URI, as Uint8Array encoded data URI, or hex encoded dataURI string`,
         httpStatus: 400,
       },
     };
@@ -151,10 +154,8 @@ export async function getDigestForData(
     const data = isRawData
       ? new TextEncoder().encode(input as string)
       : isHexData
-        ? hex2bytes((input as string).slice(2))
-        : isB64Data
-          ? new TextEncoder().encode(atob(input as string))
-          : (input as Uint8Array);
+        ? hex2bytes((input as string).replace(/^0x/, ''))
+        : (input as Uint8Array);
 
     const sha = await createDigest(data);
     const hexed = bytes2hex(data);
