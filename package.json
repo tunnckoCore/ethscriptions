@@ -1,6 +1,6 @@
 {
   "name": "ethscriptions",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "license": "MPL-2.0",
   "description": "Library with utility functions for Ethscriptions. Supports for fetching user profiles, filtering ethscriptions, and resolving names & ENS builtin",
   "author": "wgw <wgw@wgw.lol>",
@@ -21,7 +21,9 @@
     "./utils": "./dist/utils.js",
     "./utils.js": "./dist/utils.js",
     "./index.ts": "./src/index.ts",
-    "./utils.ts": "./src/utils.ts"
+    "./utils.ts": "./src/utils.ts",
+    "./types": "./src/types.ts",
+    "./types.ts": "./src/types.ts"
   },
   "module": "./dist/index.js",
   "files": [

@@ -1,6 +1,18 @@
 // SPDX-License-Identifier: MPL-2.0
 
 import { BASE_API_URL, CACHE_TTL } from './constants.ts';
+import type {
+  CheckExistResult,
+  DetailTypes,
+  EthscriptionBase,
+  EthscriptionTransfer,
+  NotOkShape,
+  NumbersResult,
+  OkShape,
+  OwnersResult,
+  ResolveUserResult,
+  UserProfileResult,
+} from './types.ts';
 import {
   bytes2hex,
   createDigest,
@@ -14,7 +26,10 @@ import {
   upstreamFetcher,
 } from './utils.ts';
 
-export async function checkExists(sha: string, options?: any) {
+export async function checkExists(
+  sha: string,
+  options?: any,
+): Promise<OkShape<CheckExistResult> | NotOkShape> {
   const opts = { baseURL: BASE_API_URL, ...options };
   sha = (sha || '').replace('0x', '');
 
@@ -49,10 +64,16 @@ export async function checkExists(sha: string, options?: any) {
     };
   }
 
-  return { result: { exists: false } };
+  return {
+    result: { exists: false },
+    headers: opts.headers || getHeaders(opts.cacheTtl ?? CACHE_TTL),
+  };
 }
 
-export async function resolveUser(val: string, options?: any) {
+export async function resolveUser(
+  val: string,
+  options?: any,
+): Promise<OkShape<ResolveUserResult> | NotOkShape> {
   const opts = { checkCreator: false, ...options };
   const resolveName = isAddress(val);
 
@@ -62,11 +83,17 @@ export async function resolveUser(val: string, options?: any) {
     return { error: { message: `Cannot resolve ${val}`, httpStatus: 404 } };
   }
 
-  const result = resolveName ? { name: resolved, address: val } : { name: val, address: resolved };
+  const result = resolveName
+    ? { name: resolved as string, address: val as `0x${string}` }
+    : { name: val, address: resolved as `0x${string}` };
+
   return { result, headers: opts.headers || getHeaders(opts.cacheTtl ?? 3600) };
 }
 
-export async function getUserProfile(val: string, options?: any) {
+export async function getUserProfile(
+  val: string,
+  options?: any,
+): Promise<OkShape<UserProfileResult> | NotOkShape> {
   const opts = { ...options };
   const res: any = await upstreamFetcher({
     resolve: !isAddress(val),
@@ -92,7 +119,10 @@ export async function getUserProfile(val: string, options?: any) {
   };
 }
 
-export async function getDigestForData(input: string | `0x${string}` | Uint8Array, options?: any) {
+export async function getDigestForData(
+  input: string | `0x${string}` | Uint8Array,
+  options?: any,
+): Promise<OkShape<DigestResult> | NotOkShape> {
   const opts = { ...options };
   const isUint8 = input instanceof Uint8Array;
   const isRawData = isUint8 ? false : input?.startsWith('data:');
@@ -123,7 +153,9 @@ export async function getDigestForData(input: string | `0x${string}` | Uint8Arra
     const inputData = new TextDecoder('utf8').decode(data);
 
     if (opts.checkExists) {
-      const resp = await checkExists(sha, opts);
+      // typescript is dumb, gotta be `any` here, cuz can't be `NotOkShape | OkShape<CheckExistResult>` like.. wtf?!
+      const resp: any = await checkExists(sha, opts);
+
       if (resp.error) {
         return resp;
       }
@@ -148,7 +180,10 @@ export async function getDigestForData(input: string | `0x${string}` | Uint8Arra
   }
 }
 
-export async function getUserCreatedEthscritions(val: string, options?: any) {
+export async function getUserCreatedEthscritions(
+  val: string,
+  options?: any,
+): Promise<OkShape<EthscriptionBase[]> | NotOkShape> {
   const createdByUser = await getAllEthscriptions({
     ...options,
     resolve: !isAddress(val),
@@ -159,7 +194,10 @@ export async function getUserCreatedEthscritions(val: string, options?: any) {
   return createdByUser;
 }
 
-export async function getUserOwnedEthscriptions(val: string, options?: any) {
+export async function getUserOwnedEthscriptions(
+  val: string,
+  options?: any,
+): Promise<OkShape<EthscriptionBase[]> | NotOkShape> {
   const ownedByUser = await getAllEthscriptions({
     ...options,
     resolve: !isAddress(val),
@@ -172,7 +210,9 @@ export async function getUserOwnedEthscriptions(val: string, options?: any) {
 
 // optionally pass filters/params like `creator=wgw` or `initial_owner=0xAddress`, or `media_subtype=image`,
 // but in object notation instead of query string
-export async function getAllEthscriptions(options: any) {
+export async function getAllEthscriptions(
+  options: any,
+): Promise<OkShape<EthscriptionBase[]> | NotOkShape> {
   const opts = { ...options };
   const data: any = await upstreamFetcher(options);
 
@@ -188,13 +228,18 @@ export async function getAllEthscriptions(options: any) {
 }
 
 // optionally pass `with` and `only` filters/params like `with=content_uri` or `only=content_uri,creator,transaction_hash`
-export async function getEthscriptionById(id: string, options?: any) {
+export async function getEthscriptionById(
+  id: string,
+  options?: any,
+): Promise<OkShape<EthscriptionBase> | NotOkShape> {
   return getEthscriptionDetailed(id, 'meta', options);
 }
 
-export async function getEthscriptionDetailed(id: string, type: string, options?: any) {
+export async function getEthscriptionDetailed(id: string, type: DetailTypes, options?: any) {
   if (!type) {
-    return { error: { message: 'The `type` argument is required ', httpStatus: 500 } };
+    return {
+      error: { message: 'The `type` argument is required ', httpStatus: 500 },
+    } as NotOkShape;
   }
 
   const opts = { ...options };
@@ -207,7 +252,7 @@ export async function getEthscriptionDetailed(id: string, type: string, options?
   const result = normalizeResult(data.result, opts);
 
   if (/meta/.test(type)) {
-    return { result, headers: opts.headers || getHeaders(CACHE_TTL) };
+    return { result, headers: opts.headers || getHeaders(CACHE_TTL) } as OkShape<EthscriptionBase>;
   }
 
   // NOTE: keep in mind that it can resolve to empty if there's attachment/blob (ESIP-8) instead,
@@ -217,13 +262,13 @@ export async function getEthscriptionDetailed(id: string, type: string, options?
     const contentBuffer = await fetch(data.result.content_uri).then((res) => res.arrayBuffer());
 
     return {
-      result: contentBuffer,
+      result: new Uint8Array(contentBuffer),
       headers: opts.headers
         ? { ...opts.headers, 'content-type': result.content_type }
         : getHeaders(CACHE_TTL, {
             'content-type': result.content_type,
           }),
-    };
+    } as OkShape<Uint8Array>;
   }
 
   if (/owner|creator|receiver|previous|initial/i.test(type)) {
@@ -242,7 +287,7 @@ export async function getEthscriptionDetailed(id: string, type: string, options?
 
       // transfers theoretically can occure only after 5 blocks (60 seconds, so 45s is fine)
       headers: opts.headers || getHeaders(45),
-    };
+    } as OkShape<OwnersResult>;
   }
 
   if (/number|index|stat|info/i.test(type)) {
@@ -262,7 +307,7 @@ export async function getEthscriptionDetailed(id: string, type: string, options?
         ),
       },
       headers: opts.headers || getHeaders(60),
-    };
+    } as OkShape<NumbersResult>;
   }
 
   if (/transfer/i.test(type)) {
@@ -270,7 +315,7 @@ export async function getEthscriptionDetailed(id: string, type: string, options?
       result: { transfers: normalizeAndSortTransfers(result) },
       // transfers theoretically can occure only after 5 blocks (60 seconds, so 45s is fine)
       headers: opts.headers || getHeaders(45),
-    };
+    } as OkShape<{ transfers: EthscriptionTransfer[] }>;
   }
 
   // NOTE: there's `blob(s)` alternativee because  `/attachment` may be buggy on some hosting providers,
@@ -283,23 +328,23 @@ export async function getEthscriptionDetailed(id: string, type: string, options?
             'No attachment for this ethscription, it is not an ESIP-8 compatible Blobscription',
           httpStatus: 404,
         },
-      };
+      } as NotOkShape;
     }
 
     // fetch the attachment content directly from upstream
     const res: any = await upstreamFetcher(opts, `${id}/attachment`);
 
     if (res.error) {
-      return res;
+      return res as NotOkShape;
     }
 
     return {
-      result: res.result,
+      result: new Uint8Array(res.result),
       headers: opts.headers
         ? { ...opts.headers, 'content-type': data.result.attachment_content_type }
         : getHeaders(CACHE_TTL, { 'content-type': data.result.attachment_content_type }),
-    };
+    } as OkShape<Uint8Array>;
   }
 
-  return { error: { message: 'Invalid request', httpStatus: 400 } };
+  return { error: { message: 'Invalid request', httpStatus: 400 } } as NotOkShape;
 }

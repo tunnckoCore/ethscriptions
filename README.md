@@ -1,4 +1,25 @@
-# ethscriptions
+# ethscriptions [![npm version][npmv-img]][npmv-url] [![License][license-img]][license-url] [![Libera Manifesto][libera-manifesto-img]][libera-manifesto-url]
+
+[npmv-url]: https://www.npmjs.com/package/ethscriptions
+[npmv-img]: https://badgen.net/npm/v/ethscriptions?icon=npm
+[license-url]: https://github.com/tunnckoCore/ethscriptions/blob/master/LICENSE.md
+[license-img]: https://badgen.net/npm/license/ethscriptions
+[libera-manifesto-url]: https://liberamanifesto.com
+[libera-manifesto-img]: https://badgen.net/badge/libera/manifesto/grey
+[bitcoin-ready-url]: https://bitcoin.org
+[bitcoin-ready-img]: https://badgen.net/badge/bitcoin/ready/orange
+[prs-welcome-img]: https://badgen.net/badge/PRs/welcome/green
+[prs-welcome-url]: http://makeapullrequest.com
+[last-commit-img]: https://badgen.net/github/last-commit/tunnckoCore/ethscriptions
+[last-commit-url]: https://github.com/tunnckoCore/cryptils/commits/master
+[codestyle-url]: https://github.com/airbnb/javascript
+[codestyle-img]:
+  https://badgen.net/badge/code%20style/airbnb%20%2B%20prettier/ff5a5f?icon=airbnb&cache=300
+
+[![Code style][codestyle-img]][codestyle-url]
+[![bunning](https://github.com/tunnckoCore/ethscriptions/actions/workflows/ci.yml/badge.svg)](https://github.com/tunnckoCore/ethscriptions/actions/workflows/ci.yml)
+[![Make A Pull Request][prs-welcome-img]][prs-welcome-url]
+[![Time Since Last Commit][last-commit-img]][last-commit-url]
 
 Library with utility functions for Ethscriptions. Supports for fetching user profiles, filtering
 ethscriptions, and resolving names & ENS builtin.
@@ -27,6 +48,13 @@ To all options object you can pass custom `headers` and `baseURL`. By default we
 // or you can use the typescript files directly
 // import { resolveUser } from 'ethscriptions/index.ts';
 // import * as utils from 'ethscriptions/utils.ts';
+
+import type {
+  NotOkShape,
+  EthscriptionBase,
+  EthscriptionTransfer,
+  ResolveUserResult,
+} from 'ethscriptions/types';
 
 import { getPrices, namesResolver } from 'ethscriptions/utils';
 import {
