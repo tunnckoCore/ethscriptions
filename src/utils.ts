@@ -3,39 +3,83 @@
 import { CacheHeaders } from 'cdn-cache-control';
 
 import { BASE_API_URL } from './constants.ts';
+import type { NotOkShape, OkShape, PricesResult } from './types.ts';
 
-export async function getPrices(speed = 'normal') {
+export async function getPrices(speed = 'normal'): Promise<OkShape<PricesResult> | NotOkShape> {
   try {
     const resp = await fetch(`https://www.ethgastracker.com/api/gas/latest`);
 
     if (!resp.ok) {
       return {
+        ok: false,
         error: {
           message: `Failed to fetch gas prices: ${resp.statusText}`,
           httpStatus: resp.status || 500,
         },
-      };
+      } as NotOkShape;
     }
 
-    const { data }: any = await resp.json();
+    const { data } = await resp.json();
+    // as {
+    //   data: {
+    //     network: string;
+    //     blockNr: string;
+    //     timestamp: number;
+    //     ethPrice: number;
+    //     baseFee: number;
+    //     nextFee: number;
+    //     difference: number;
+    //     block: {
+    //       gasLimit: number;
+    //       gasUsed: number;
+    //       utilization: number;
+    //       transactionCount: number;
+    //     };
+    //     oracle: {
+    //       slow: {
+    //         gasFee: number;
+    //         priorityFee: number;
+    //         gwei: number;
+    //       };
+    //       normal: {
+    //         gasFee: number;
+    //         priorityFee: number;
+    //         gwei: number;
+    //       };
+    //       fast: {
+    //         gasFee: number;
+    //         priorityFee: number;
+    //         gwei: number;
+    //       };
+    //     };
+    //     lastUpdate: number;
+    //   };
+    // };
+
     return {
+      ok: true,
       result: {
+        blockNumber: data.blockNr,
         baseFee: data.baseFee,
         nextFee: data.nextFee,
         ethPrice: data.ethPrice,
         gasPrice: data.oracle[speed].gwei,
         gasFee: data.oracle[speed].gasFee,
         priorityFee: data.oracle[speed].priorityFee,
-      },
-    };
+      } as PricesResult,
+    } as OkShape<PricesResult>;
   } catch (err: any) {
     return {
+      ok: false,
       error: { message: `Failed to fetch prices from API: ${err.toString()}`, httpStatus: 500 },
-    };
+    } as NotOkShape;
   }
 }
 
-export async function upstreamFetcher(options?: any, id?: string | null) {
+export async function upstreamFetcher(
+  options?: any,
+  id?: string | null,
+): Promise<OkShape<Uint8Array | Record<string, any>> | NotOkShape> {
   let opts = { resolve: false, baseURL: BASE_API_URL, ...filtersNormalizer({ ...options }) };
 
   if (opts.resolve) {
@@ -54,6 +98,7 @@ export async function upstreamFetcher(options?: any, id?: string | null) {
 
   if (!resp.ok) {
     return {
+      ok: false,
       error: {
         message: 'Transaction not found or it is not an Ethscription.',
         httpStatus: resp.status,
@@ -62,7 +107,7 @@ export async function upstreamFetcher(options?: any, id?: string | null) {
   }
 
   if (isAttachment) {
-    return { result: await resp.arrayBuffer() };
+    return { ok: true, result: new Uint8Array(await resp.arrayBuffer()) };
   }
 
   const data: any = await resp.json();
@@ -70,10 +115,11 @@ export async function upstreamFetcher(options?: any, id?: string | null) {
   //   ? data.result.map((x) => normalizeResult(x, url))
   //   : normalizeResult(data.result, url);
 
-  const response = { result: data.result, id };
+  const response = { ok: true, result: data.result as Record<string, any> } as OkShape<
+    Uint8Array | Record<string, any>
+  >;
 
   if (data.pagination) {
-    // @ts-expect-error bruh
     response.pagination = data.pagination;
   }
 
@@ -101,8 +147,8 @@ export function normalizeResult(result: any, options?: any) {
 
   const keys = Object.keys(result || {});
 
-  const withs = opts.with?.split(',') || [];
-  const onlys = opts.only?.split(',') || [];
+  const withs = Array.isArray(opts.with) ? opts.with : opts.with?.split(',') || [];
+  const onlys = Array.isArray(opts.only) ? opts.only : opts.only?.split(',') || [];
   const isTxOnly =
     (keys.length === 1 && keys[0] === 'transaction_hash') || opts.transaction_hash_only;
 
@@ -216,7 +262,9 @@ export function filtersNormalizer(opts: Record<string, any>) {
   return { ...opts };
 }
 
-export function filtersNormalizerFromUrlSearchParams(searchParams: URLSearchParams) {
+export function filtersNormalizerFromUrlSearchParams(
+  searchParams: URLSearchParams,
+): URLSearchParams {
   const opts = Object.fromEntries(searchParams.entries());
   const normalizedOptions = filtersNormalizer(opts);
 

@@ -1,19 +1,3 @@
-export type NotOkShape = {
-  error: {
-    message: string;
-    httpStatus: number;
-  };
-};
-
-export type OkShape<T> = {
-  result: T;
-  headers: Headers | Record<string, string>;
-  pagination?: {
-    page_key: `0x${string}`;
-    has_more: boolean;
-  };
-};
-
 export type EthscriptionBase = {
   block_number: `${number}`;
   block_blockhash: string;
@@ -85,19 +69,15 @@ export type NumbersResult = {
   ethscription_transfers: `${number}`;
 };
 
-export type TypeMetadata = 'meta' | 'metadata';
-export type TypeContent = 'data' | 'content';
-export type TypeTransfer = 'transfer' | 'transfers';
-export type TypeOwner = 'owner' | 'owners' | 'initial' | 'previous' | 'creator' | 'receiver';
-export type TypeNumbers = 'number' | 'numbers' | 'info' | 'index' | 'stats';
-export type TypeAttachment = 'attach' | 'attachment' | 'blob';
-export type DetailTypes =
-  | TypeMetadata
-  | TypeContent
-  | TypeTransfer
-  | TypeOwner
-  | TypeNumbers
-  | TypeAttachment;
+export type PricesResult = {
+  blockNumber: string;
+  baseFee: number;
+  nextFee: number;
+  ethPrice: string;
+  gasPrice: number;
+  gasFee: number;
+  priorityFee: number;
+};
 
 export type EthscriptionTransfer = {
   transaction_hash: `0x${string}`;
@@ -114,4 +94,171 @@ export type EthscriptionTransfer = {
   is_esip2: boolean;
 };
 
-// NOTE: Ideally use something like `Result<T>` with conditional types based on DetailTypes
+export type OkShape<T> = {
+  ok: true;
+  result: T;
+  headers?: Headers | Record<string, string>;
+  pagination?: {
+    page_key: `0x${string}`;
+    has_more: boolean;
+  };
+};
+
+// Define the NotOkShape
+export type NotOkShape = {
+  ok: false;
+  error: {
+    message: string;
+    httpStatus: number;
+  };
+};
+
+export type EnumMetadata = 'meta' | 'metadata';
+export type EnumContent = 'data' | 'content';
+export type EnumOwner = 'owner' | 'owners' | 'initial' | 'previous' | 'creator' | 'receiver';
+export type EnumNumbers = 'number' | 'numbers' | 'info' | 'index' | 'stats';
+export type EnumTransfer = 'transfer' | 'transfers';
+export type EnumAttachment = 'attach' | 'attachment' | 'blob';
+export type EnumAllDetailed =
+  | EnumMetadata
+  | EnumContent
+  | EnumOwner
+  | EnumNumbers
+  | EnumTransfer
+  | EnumAttachment;
+
+export type DetailedMap<T extends EnumAllDetailed> = {
+  meta: EthscriptionBase;
+  metadata: EthscriptionBase;
+
+  data: Uint8Array;
+  content: Uint8Array;
+
+  owner: OwnersResult;
+  owners: OwnersResult;
+  initial: OwnersResult;
+  previous: OwnersResult;
+  creator: OwnersResult;
+  receiver: OwnersResult;
+
+  number: NumbersResult;
+  numbers: NumbersResult;
+  info: NumbersResult;
+  index: NumbersResult;
+  stats: NumbersResult;
+
+  transfer: EthscriptionTransfer[];
+  transfers: EthscriptionTransfer[];
+
+  attach: Uint8Array;
+  attachment: Uint8Array;
+  blob: Uint8Array;
+}[T];
+
+export type ResultDetailed<T extends EnumAllDetailed> = OkShape<DetailedMap<T>> | NotOkShape;
+export type Result<T> = OkShape<T> | NotOkShape;
+
+// Define the function with a simplified return type
+// function foobar<T extends EnumAllDetailed>(type: T): ResultDetailed<T> {
+//   switch (type) {
+//     case 'meta':
+//     case 'metadata': {
+//       return {
+//         ok: true,
+//         result: eth as EthscriptionBase,
+//       } as OkShape<DetailedMap<T>>;
+//     }
+
+//     case 'data':
+//     case 'content': {
+//       return {
+//         ok: true,
+//         result: new Uint8Array(123),
+//       } as OkShape<DetailedMap<T>>;
+//     }
+
+//     case 'owner':
+//     case 'owners':
+//     case 'initial':
+//     case 'previous':
+//     case 'creator':
+//     case 'receiver': {
+//       return {
+//         ok: true,
+//         result: {
+//           latest_transfer_timestamp: '123',
+//           latest_transfer_datetime: '123',
+//           latest_transfer_block: '123',
+//           creator: '0x123',
+//           initial: '0x123',
+//           current: '0x123',
+//           previous: '0x123',
+//         } as OwnersResult,
+//       } as OkShape<DetailedMap<T>>;
+//     }
+
+//     case 'number':
+//     case 'numbers':
+//     case 'info':
+//     case 'index':
+//     case 'stats': {
+//       return {
+//         ok: true,
+//         result: {
+//           block_timestamp: '123',
+//           block_datetime: '123',
+//           block_blockhash: '0x123',
+//           block_number: '123',
+//           block_number_fmt: '123',
+//           transaction_index: '123',
+//           event_log_index: '123',
+//           ethscription_number: '123',
+//           ethscription_number_fmt: '123',
+//           ethscription_transfers: '123',
+//         } as NumbersResult,
+//       } as OkShape<DetailedMap<T>>;
+//     }
+
+//     case 'transfer':
+//     case 'transfers': {
+//       return {
+//         ok: true,
+//         result: [
+//           {
+//             transaction_hash: '0x123',
+//             from_address: '0x123',
+//             to_address: '0x123',
+//             block_number: '123',
+//             block_timestamp: '123',
+//             block_blockhash: '0x123',
+//             event_log_index: '123',
+//             transaction_index: '123',
+//             enforced_previous_owner: '0x123',
+//             is_esip0: true,
+//             is_esip1: true,
+//             is_esip2: true,
+//           },
+//         ] as EthscriptionTransfer[],
+//       } as OkShape<DetailedMap<T>>;
+//     }
+
+//     case 'attach':
+//     case 'attachment':
+//     case 'blob': {
+//       return {
+//         ok: true,
+//         result: new Uint8Array(123),
+//       } as OkShape<DetailedMap<T>>;
+//     }
+
+//     default: {
+//       return {
+//         ok: false,
+//         error: {
+//           message: 'Unknown type',
+//           httpStatus: 400,
+//         },
+//       } as NotOkShape;
+//     }
+//   }
+// }
