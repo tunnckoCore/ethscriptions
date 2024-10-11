@@ -60,13 +60,23 @@ if (eths.ok) {
   throw new Error(eths.error.message);
 }
 
-const digest = await getDigestForData('data:,wgw', { checkExists: true });
+const digest = await getDigestForData('data:,wgw');
 
 if (digest.ok) {
-  assert.strictEqual(digest.result.exists, true);
+  assert.strictEqual(digest.result.exists, undefined);
+  assert.strictEqual(digest.result.ethscription, undefined);
   assert.strictEqual(
     digest.result.sha,
     '161cfbb8a29429c151f2b57a9c5f9a35dab57a63aacedd5803472c5bda8ec5f9',
   );
   assert.strictEqual(digest.result.hex, '0x646174613a2c776777');
+
+  const checked = await checkExists(digest.result.sha);
+  assert.strictEqual(checked.ok, true);
+  assert.strictEqual(checked.result.exists, true);
+  assert(checked.result.ethscription);
+  assert.strictEqual(
+    checked.result.ethscription.transaction_hash,
+    '0xac9cbabc7425e9ea665be6dc6479b1dd22ef14ef586698af3c650447c07f6214',
+  );
 }

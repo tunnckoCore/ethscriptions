@@ -4,12 +4,10 @@ import { BASE_API_URL, CACHE_TTL } from './constants.ts';
 import type {
   CheckExistResult,
   DigestResult,
-  DigestWithCheckResult,
   EnumAllDetailed,
   EthscriptionBase,
   EthscriptionTransfer,
   NumbersResult,
-  OkShape,
   OwnersResult,
   ResolveUserResult,
   Result,
