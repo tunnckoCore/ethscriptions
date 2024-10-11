@@ -1,6 +1,6 @@
 {
   "name": "ethscriptions",
-  "version": "0.4.3",
+  "version": "0.4.5",
   "license": "MPL-2.0",
   "description": "Library with utility functions for Ethscriptions. Supports for fetching user profiles, filtering ethscriptions, and resolving names & ENS builtin",
   "author": "wgw <wgw@wgw.lol>",
@@ -43,6 +43,7 @@
   },
   "scripts": {
     "build": "rm -rf dist && bun build src/index.ts src/utils.ts --outdir dist --packages=external",
+    "prepublishOnly": "bun run build",
     "test": "bun run example.ts"
   },
   "dependencies": {
