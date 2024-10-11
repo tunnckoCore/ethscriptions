@@ -80,9 +80,9 @@ export async function upstreamFetcher(options?: any, id?: string | null) {
   return response;
 }
 
-export function normalizeAndSortTransfers(result) {
+export function normalizeAndSortTransfers(transfers: any[]) {
   return (
-    result.ethscription_transfers
+    transfers
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .map(({ ethscription_transaction_hash, ...x }, idx) => ({
         ...x,

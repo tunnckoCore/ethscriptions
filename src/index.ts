@@ -4,6 +4,7 @@ import { BASE_API_URL, CACHE_TTL } from './constants.ts';
 import type {
   CheckExistResult,
   DetailTypes,
+  DigestResult,
   EthscriptionBase,
   EthscriptionTransfer,
   NotOkShape,
@@ -273,7 +274,7 @@ export async function getEthscriptionDetailed(id: string, type: DetailTypes, opt
 
   if (/owner|creator|receiver|previous|initial/i.test(type)) {
     // use `data.result` because transfers does not exists in `result` by default
-    const transfers = normalizeAndSortTransfers(data.result);
+    const transfers = normalizeAndSortTransfers(data.result.ethscription_transfers);
     return {
       result: {
         latest_transfer_timestamp: transfers[0].block_timestamp,
@@ -303,7 +304,9 @@ export async function getEthscriptionDetailed(id: string, type: DetailTypes, opt
         ethscription_number: result.ethscription_number,
         ethscription_number_fmt: numfmt(result.ethscription_number),
         ethscription_transfers: String(
-          normalizeAndSortTransfers(result).filter((x) => x.is_esip0 === false).length,
+          normalizeAndSortTransfers(data.result.ethscription_transfers).filter(
+            (x) => x.is_esip0 === false,
+          ).length,
         ),
       },
       headers: opts.headers || getHeaders(60),
@@ -312,10 +315,11 @@ export async function getEthscriptionDetailed(id: string, type: DetailTypes, opt
 
   if (/transfer/i.test(type)) {
     return {
-      result: { transfers: normalizeAndSortTransfers(result) },
+      result: normalizeAndSortTransfers(data.result.ethscription_transfers),
+      pagination: data.pagination,
       // transfers theoretically can occure only after 5 blocks (60 seconds, so 45s is fine)
       headers: opts.headers || getHeaders(45),
-    } as OkShape<{ transfers: EthscriptionTransfer[] }>;
+    } as OkShape<EthscriptionTransfer[]>;
   }
 
   // NOTE: there's `blob(s)` alternativee because  `/attachment` may be buggy on some hosting providers,
