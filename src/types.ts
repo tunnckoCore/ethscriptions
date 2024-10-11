@@ -79,6 +79,23 @@ export type PricesResult = {
   priorityFee: number;
 };
 
+export type BaseCostOpts = {
+  speed?: 'normal' | 'fast';
+  usePrices?: boolean;
+  bufferFee?: number;
+};
+
+export type EsimtateCostOptions =
+  | BaseCostOpts
+  | (PricesResult & BaseCostOpts)
+  | (Partial<PricesResult> & BaseCostOpts);
+
+export type EstimateCostResult = {
+  prices: EsimtateCostOptions;
+  cost: { wei: number; eth: number; usd: number };
+  meta: { gasUsed: number; inputLength: number };
+};
+
 export type EthscriptionTransfer = {
   transaction_hash: `0x${string}`;
   from_address: `0x${string}`;

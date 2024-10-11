@@ -2,13 +2,18 @@
 
 import { BASE_API_URL, CACHE_TTL } from './constants.ts';
 import type {
+  BaseCostOpts,
   CheckExistResult,
   DigestResult,
   EnumAllDetailed,
+  EsimtateCostOptions,
+  EstimateCostResult,
   EthscriptionBase,
   EthscriptionTransfer,
   NumbersResult,
+  OkShape,
   OwnersResult,
+  PricesResult,
   ResolveUserResult,
   Result,
   ResultDetailed,
@@ -18,6 +23,7 @@ import {
   bytes2hex,
   createDigest,
   getHeaders,
+  getPrices,
   hex2bytes,
   isAddress,
   isHex,
@@ -128,7 +134,7 @@ export async function getUserProfile(
 }
 
 export async function getDigestForData(
-  input: `data:${string}` | `0x${string}` | Uint8Array,
+  input: `data:${string}` | `0x${string}` | Uint8Array | string,
   options?: any,
 ): Promise<Result<DigestResult>> {
   const opts = { ...options };
@@ -392,4 +398,67 @@ export async function getEthscriptionDetailed<T extends EnumAllDetailed>(
     ok: false,
     error: { message: 'Invalid request', httpStatus: 400 },
   };
+}
+
+export async function estimateDataCost(
+  input: `data:${string}` | `0x${string}` | Uint8Array | string,
+  options?: EsimtateCostOptions,
+): Promise<Result<EstimateCostResult>> {
+  const cfg = { speed: 'normal', usePrices: true, ...options };
+  const prices = await getPrices(cfg.speed);
+
+  if (!prices.ok) {
+    return prices;
+  }
+
+  const opts = { bufferFee: 0, ...prices.result, ...cfg } as PricesResult & BaseCostOpts;
+  const isUint8 = input instanceof Uint8Array;
+  const isRawData = isUint8 ? false : input?.startsWith('data:');
+  const isHexData = isUint8
+    ? false
+    : isHex(input?.replace(/^0x/, '')) && input?.replace(/^0x/, '')?.startsWith('646174613a');
+
+  const isValid = [isUint8, isRawData, isHexData].includes(true);
+
+  if (!isValid) {
+    return {
+      ok: false,
+      error: {
+        message: `Invalid data, must be a data URI as Uint8Array encoded data URI, or hex encoded dataURI string`,
+        httpStatus: 400,
+      },
+    };
+  }
+
+  try {
+    const data = isRawData
+      ? new TextEncoder().encode(input as string)
+      : isHexData
+        ? hex2bytes((input as string).replace(/^0x/, ''))
+        : (input as Uint8Array);
+
+    const dataWei = data.reduce((acc, byte) => acc + (byte === 0 ? 4 : 16), 0);
+    const transferWei = 21_000;
+    const bufferWei = opts.bufferFee || 0;
+    const usedWei = dataWei + transferWei + bufferWei;
+    const totalGasWei = opts.gasPrice ? opts.gasPrice * 1e9 : opts.baseFee + opts.priorityFee;
+    const costWei = usedWei * totalGasWei;
+
+    const eth = costWei / 1e18;
+    const usd = eth * Number(opts.ethPrice);
+
+    return {
+      ok: true,
+      result: {
+        prices: opts,
+        cost: { wei: costWei, eth, usd },
+        meta: { gasUsed: usedWei, inputLength: input.length },
+      },
+    };
+  } catch (err: any) {
+    return {
+      ok: false,
+      error: { message: `Failure in estimate: ${err.toString()}`, httpStatus: 500 },
+    };
+  }
 }
