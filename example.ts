@@ -1,6 +1,12 @@
 import assert from 'node:assert/strict';
 
-import { getEthscriptionDetailed, getUserProfile, resolveUser } from './src/index.ts';
+import {
+  checkExists,
+  getDigestForData,
+  getEthscriptionDetailed,
+  getUserProfile,
+  resolveUser,
+} from './src/index.ts';
 import { getPrices } from './src/utils.ts';
 
 const res = await getPrices();
@@ -36,6 +42,7 @@ if (creatorOfEthscriptionName.ok) {
 const profile = await getUserProfile('wgw');
 
 if (profile.ok) {
+  // profile.result.previous[0]?.block_number;
   assert.strictEqual(profile.result.latest.creator, wgwAddress); // => true
 } else {
   throw new Error(profile.error.message);
@@ -51,4 +58,15 @@ if (eths.ok) {
   );
 } else {
   throw new Error(eths.error.message);
+}
+
+const digest = await getDigestForData('data:,wgw', { checkExists: true });
+
+if (digest.ok) {
+  assert.strictEqual(digest.result.exists, true);
+  assert.strictEqual(
+    digest.result.sha,
+    '161cfbb8a29429c151f2b57a9c5f9a35dab57a63aacedd5803472c5bda8ec5f9',
+  );
+  assert.strictEqual(digest.result.hex, '0x646174613a2c776777');
 }

@@ -4,6 +4,7 @@ import { BASE_API_URL, CACHE_TTL } from './constants.ts';
 import type {
   CheckExistResult,
   DigestResult,
+  DigestWithCheckResult,
   EnumAllDetailed,
   EthscriptionBase,
   EthscriptionTransfer,
@@ -94,7 +95,7 @@ export async function resolveUser(val: string, options?: any): Promise<Result<Re
     ok: true,
     result,
     headers: opts.headers || getHeaders(opts.cacheTtl ?? 3600),
-  } as OkShape<ResolveUserResult>;
+  };
 }
 
 export async function getUserProfile(
@@ -102,7 +103,7 @@ export async function getUserProfile(
   options?: any,
 ): Promise<Result<UserProfileResult>> {
   const opts = { ...options };
-  const res: any = await upstreamFetcher({
+  const res = await upstreamFetcher({
     resolve: !isAddress(val),
     creator: val,
     media_type: 'application',
@@ -124,7 +125,7 @@ export async function getUserProfile(
       previous: data.slice(1) || [],
     } as UserProfileResult,
     headers: opts.headers || getHeaders(opts.cacheTtl ?? 300),
-  } as OkShape<UserProfileResult>;
+  };
 }
 
 export async function getDigestForData(
@@ -161,8 +162,7 @@ export async function getDigestForData(
     const inputData = new TextDecoder('utf8').decode(data);
 
     if (opts.checkExists) {
-      // typescript is dumb, gotta be `any` here, cuz can't be `NotOkShape | OkShape<CheckExistResult>` like.. wtf?!
-      const resp: any = await checkExists(sha, opts);
+      const resp = await checkExists(sha, opts);
 
       if (!resp.ok) {
         return resp;
@@ -170,19 +170,22 @@ export async function getDigestForData(
 
       return {
         ok: true,
-        result: { sha, hex: `0x${hexed}`, input: inputData, ...resp.result } as DigestResult,
+        result: {
+          sha,
+          hex: `0x${hexed}`,
+          input: inputData,
+          exists: resp.result.exists,
+          ethscription: resp.result.ethscription,
+        },
         headers: opts.headers || getHeaders(opts.cacheTtl ?? 300),
-      } as OkShape<DigestResult>;
+      };
     }
 
     return {
       ok: true,
-      result: { sha, hex: `0x${hexed}`, input: inputData } as Omit<
-        DigestResult,
-        'exists' | 'ethscription'
-      >,
+      result: { sha, hex: `0x${hexed}`, input: inputData },
       headers: opts.headers || getHeaders(opts.cacheTtl ?? 300),
-    } as OkShape<Omit<DigestResult, 'exists' | 'ethscription'>>;
+    };
   } catch (err: any) {
     return {
       ok: false,
@@ -370,7 +373,7 @@ export async function getEthscriptionDetailed<T extends EnumAllDetailed>(
     }
 
     // fetch the attachment content directly from upstream
-    const res: any = await upstreamFetcher(opts, `${id}/attachment`);
+    const res = await upstreamFetcher(opts, `${id}/attachment`);
 
     if (!res.ok) {
       return res;
