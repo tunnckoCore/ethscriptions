@@ -229,6 +229,11 @@ export function filtersNormalizer(opts: Record<string, any>) {
     // delete opts.per_page;
   }
 
+  if (opts.cursor) {
+    opts.page_key = opts.cursor;
+    delete opts.cursor;
+  }
+
   // patch `receiver` with `initial_owner` for consistency with other fields
   if (opts.receiver) {
     opts.initial_owner = opts.receiver;
