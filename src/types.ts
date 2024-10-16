@@ -98,9 +98,9 @@ export type EsimtateCostOptions =
   | (Partial<PricesResult> & BaseCostOpts);
 
 export type EstimateCostResult = {
-  prices: EsimtateCostOptions;
+  prices: PricesResult & BaseCostOpts;
   cost: { wei: number; eth: number; usd: number };
-  meta: { gasUsed: number; inputLength: number };
+  meta: { gasNeeded: number; inputLength: number };
 };
 
 export type EthscriptionTransfer = {

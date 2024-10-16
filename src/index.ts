@@ -404,14 +404,14 @@ export async function estimateDataCost(
   input: `data:${string}` | `0x${string}` | Uint8Array | string,
   options?: EsimtateCostOptions,
 ): Promise<Result<EstimateCostResult>> {
-  const cfg = { speed: 'normal', usePrices: true, ...options };
+  const cfg = { speed: 'normal', usePrices: true, bufferFee: 0, ...options };
   const prices = await getPrices(cfg.speed);
 
   if (!prices.ok) {
     return prices;
   }
 
-  const opts = { bufferFee: 0, ...prices.result, ...cfg } as PricesResult & BaseCostOpts;
+  const opts = { ...prices.result, ...cfg };
   const isUint8 = input instanceof Uint8Array;
   const isRawData = isUint8 ? false : input?.startsWith('data:');
   const isHexData = isUint8
@@ -450,9 +450,9 @@ export async function estimateDataCost(
     return {
       ok: true,
       result: {
-        prices: opts,
+        prices: opts as PricesResult & BaseCostOpts,
         cost: { wei: costWei, eth, usd },
-        meta: { gasUsed: usedWei, inputLength: input.length },
+        meta: { gasNeeded: usedWei, inputLength: input.length },
       },
     };
   } catch (err: any) {
