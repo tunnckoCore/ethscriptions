@@ -129,7 +129,7 @@ export async function upstreamFetcher(
 export function normalizeAndSortTransfers(transfers: any[]) {
   return (
     transfers
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
       .map(({ ethscription_transaction_hash, ...x }, idx) => ({
         ...x,
         is_esip0: idx === 0,

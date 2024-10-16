@@ -5,13 +5,13 @@ import type {
   BaseCostOpts,
   CheckExistResult,
   DigestResult,
+  DigestResultWithEthscription,
   EnumAllDetailed,
   EsimtateCostOptions,
   EstimateCostResult,
   EthscriptionBase,
   EthscriptionTransfer,
   NumbersResult,
-  OkShape,
   OwnersResult,
   PricesResult,
   ResolveUserResult,
@@ -136,7 +136,7 @@ export async function getUserProfile(
 export async function getDigestForData(
   input: `data:${string}` | `0x${string}` | Uint8Array | string,
   options?: any,
-): Promise<Result<DigestResult>> {
+): Promise<Result<DigestResult | DigestResultWithEthscription>> {
   const opts = { ...options };
   const isUint8 = input instanceof Uint8Array;
   const isRawData = isUint8 ? false : input?.startsWith('data:');
@@ -182,16 +182,16 @@ export async function getDigestForData(
           input: inputData,
           exists: resp.result.exists,
           ethscription: resp.result.ethscription,
-        },
+        } as DigestResultWithEthscription,
         headers: opts.headers || getHeaders(opts.cacheTtl ?? 300),
-      };
+      } as Result<DigestResultWithEthscription>;
     }
 
     return {
       ok: true,
-      result: { sha, hex: `0x${hexed}`, input: inputData },
+      result: { sha, hex: `0x${hexed}`, input: inputData } as DigestResult,
       headers: opts.headers || getHeaders(opts.cacheTtl ?? 300),
-    };
+    } as Result<DigestResult>;
   } catch (err: any) {
     return {
       ok: false,

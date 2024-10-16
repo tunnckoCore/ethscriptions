@@ -45,6 +45,13 @@ export type DigestResult = {
   exists?: boolean;
   ethscription?: EthscriptionBase;
 };
+export type DigestResultWithEthscription = {
+  sha: string;
+  hex: `0x${string}`;
+  input: string;
+  exists: boolean;
+  ethscription: EthscriptionBase;
+};
 
 export type OwnersResult = {
   latest_transfer_timestamp: `${number}`;
