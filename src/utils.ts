@@ -201,9 +201,9 @@ export function normalizeResult(result: any, options?: any) {
     }),
   );
 
-  const withRes = withs.reduce((acc, withKey) => {
+  const withRes = withs.reduce((acc: typeof onlyRes, withKey: string) => {
     if (!acc[withKey]) {
-      acc[withKey] = res[withKey] || result[withKey];
+      acc[withKey] = (res as any)[withKey] || result[withKey];
     }
 
     return acc;
@@ -222,6 +222,11 @@ export function filtersNormalizer(opts: Record<string, any>) {
   if (opts.media_subtype) {
     opts.mime_subtype = opts.media_subtype;
     delete opts.media_subtype;
+  }
+
+  if (opts.per_page) {
+    opts.max_results = opts.per_page;
+    // delete opts.per_page;
   }
 
   // patch `receiver` with `initial_owner` for consistency with other fields
