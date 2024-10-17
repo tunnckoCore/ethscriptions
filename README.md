@@ -21,6 +21,8 @@
 [![Make A Pull Request][prs-welcome-img]][prs-welcome-url]
 [![Time Since Last Commit][last-commit-img]][last-commit-url]
 
+**Part of the [Calldata.Space](https://calldata.space) Project**
+
 Library with utility functions for Ethscriptions. Supports for fetching user profiles, filtering
 ethscriptions, and resolving names & ENS builtin.
 
