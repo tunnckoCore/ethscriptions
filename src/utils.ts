@@ -246,6 +246,12 @@ export function filtersNormalizer(opts: Record<string, any>) {
     delete opts.initial;
   }
 
+  // patch `previous` with `previous_owner` for consistency with other fields
+  if (opts.previous) {
+    opts.previous_owner = opts.previous;
+    delete opts.previous;
+  }
+
   // patch `current` with `current_owner` for consistency with other fields
   if (opts.current) {
     opts.current_owner = opts.current;
