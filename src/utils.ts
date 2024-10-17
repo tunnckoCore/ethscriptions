@@ -229,6 +229,11 @@ export function filtersNormalizer(opts: Record<string, any>) {
     // delete opts.per_page;
   }
 
+  if (opts.page_size) {
+    opts.max_results = opts.page_size;
+    // delete opts.per_page;
+  }
+
   if (opts.cursor) {
     opts.page_key = opts.cursor;
     delete opts.cursor;
