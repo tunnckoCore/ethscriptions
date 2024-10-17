@@ -83,7 +83,11 @@ export async function resolveUser(val: string, options?: any): Promise<Result<Re
   const opts = { checkCreator: false, ...options };
   const resolveName = isAddress(val);
 
-  const resolved = await namesResolver(val, null, { resolveName, checkCreator: opts.checkCreator });
+  const resolved = await namesResolver(val, null, {
+    ...opts,
+    resolveName,
+    checkCreator: opts.checkCreator,
+  });
 
   if (!resolved) {
     return {
@@ -109,6 +113,7 @@ export async function getUserProfile(
 ): Promise<Result<UserProfileResult>> {
   const opts = { ...options };
   const res = await upstreamFetcher({
+    ...opts,
     resolve: !isAddress(val),
     creator: val,
     media_type: 'application',
@@ -120,8 +125,8 @@ export async function getUserProfile(
   }
 
   const data = Array.isArray(res.result)
-    ? res.result.map((x) => normalizeResult(x, { with: 'content_uri' }))
-    : [normalizeResult(res.result, { with: 'content_uri' })];
+    ? res.result.map((x) => normalizeResult(x, { ...opts, with: opts.with || 'content_uri' }))
+    : [normalizeResult(res.result, { ...opts, with: opts.with || 'content_uri' })];
 
   return {
     ok: true,
@@ -235,7 +240,7 @@ export async function getUserOwnedEthscriptions(
 // but in object notation instead of query string
 export async function getAllEthscriptions(options: any): Promise<Result<EthscriptionBase[]>> {
   const opts = { ...options };
-  const data: any = await upstreamFetcher(options);
+  const data: any = await upstreamFetcher(opts);
 
   if (!data.ok) {
     return data;
@@ -243,7 +248,7 @@ export async function getAllEthscriptions(options: any): Promise<Result<Ethscrip
 
   return {
     ok: true,
-    result: data.result.map((x: any) => normalizeResult(x, options)) as EthscriptionBase[],
+    result: data.result.map((x: any) => normalizeResult(x, opts)) as EthscriptionBase[],
     pagination: data.pagination,
     headers: opts.headers || getHeaders(opts.cacheTtl ?? 15),
   };
