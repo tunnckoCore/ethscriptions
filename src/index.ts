@@ -317,9 +317,9 @@ export async function getEthscriptionDetailed<T extends EnumAllDetailed>(
         latest_transfer_datetime: new Date(Number(result.block_timestamp) * 1000).toISOString(),
         latest_transfer_block: transfers[0].block_number,
         creator: result.creator,
-        initial: result.initial_owner,
-        current: result.current_owner,
-        previous: result.previous_owner,
+        initial: data.result.initial_owner,
+        current: data.result.current_owner,
+        previous: data.result.previous_owner,
       } as OwnersResult,
 
       // transfers theoretically can occure only after 5 blocks (60 seconds, so 45s is fine)
