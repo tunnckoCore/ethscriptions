@@ -273,6 +273,14 @@ export function filtersNormalizer(opts: Record<string, any>) {
     opts.mimetype = opts.content_type;
     delete opts.content_type;
   }
+  // if `content_type[]=foo/bar&content_type[]=abc/qux`, eg it's is multiples
+  const params = Object.entries(opts);
+  if (params.some(([key]) => key.startsWith('content_type'))) {
+    const contentTypes = params
+      .filter(([key]) => key.startsWith('content_type'))
+      .map(([_, value]) => value);
+    opts.mimetype = contentTypes;
+  }
 
   // support `is_esip6` instead of just `esip6` for consistency with fields and other ESIPs fiekds
   // Note: no such `esip6` filter on upstream, i thought there is. But lets keep it for now
