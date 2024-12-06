@@ -290,10 +290,13 @@ export function filtersNormalizerFromUrlSearchParams(
   const params = Array.from(searchParams.entries());
   const opts = {};
   for (const entry of params) {
-    const [k, value] = entry;
-    let key = k;
-    key = key.replace('[]', '');
-    opts[key] = opts[key] ? [opts[key], value] : value;
+    const [key, value] = entry;
+
+    opts[key] = opts[key]
+      ? Array.isArray(opts[key])
+        ? [...opts[key], value]
+        : [opts[key], value]
+      : value;
   }
 
   const normalizedOptions = filtersNormalizer(opts);
