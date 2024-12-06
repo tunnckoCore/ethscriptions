@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 
 import { CacheHeaders } from 'cdn-cache-control';
+import * as qs from 'qs-esm';
 
 import { BASE_API_URL } from './constants.ts';
 import type { NotOkShape, OkShape, PricesResult } from './types.ts';
@@ -86,14 +87,14 @@ export async function upstreamFetcher(
     opts = await resolveAddressPatches(opts);
   }
 
-  const params = Object.entries(opts).map((x) => [x[0], String(x[1])]);
-  const searchParams = new URLSearchParams(params);
+  const searchStr = qs.stringify(opts, { encode: false, indices: false });
+  const searchParams = new URLSearchParams(searchStr);
 
   const isAttachment = id && /attach|blob/i.test(id);
   const fpath = (isAttachment ? [id.split('/')[0], 'attachment'] : [id || '']).join('/');
 
   const resp = await fetch(
-    `${opts.baseURL}/ethscriptions${id ? `/${fpath}` : ''}${params.length > 0 ? `?${searchParams}` : ''}`,
+    `${opts.baseURL}/ethscriptions${id ? `/${fpath}` : ''}${Object.entries(opts).length > 0 ? `?${searchParams}` : ''}`,
   );
 
   if (!resp.ok) {
@@ -286,10 +287,19 @@ export function filtersNormalizer(opts: Record<string, any>) {
 export function filtersNormalizerFromUrlSearchParams(
   searchParams: URLSearchParams,
 ): URLSearchParams {
-  const opts = Object.fromEntries(searchParams.entries());
-  const normalizedOptions = filtersNormalizer(opts);
+  const params = Array.from(searchParams.entries());
+  const opts = {};
+  for (const entry of params) {
+    const [k, value] = entry;
+    let key = k;
+    key = key.replace('[]', '');
+    opts[key] = opts[key] ? [opts[key], value] : value;
+  }
 
-  return new URLSearchParams(Object.entries(normalizedOptions));
+  const normalizedOptions = filtersNormalizer(opts);
+  const searchParamsStr = qs.stringify(normalizedOptions, { encode: false, indices: false });
+
+  return new URLSearchParams(searchParamsStr);
 }
 
 export async function resolveAddressPatches(options: any, ensHandler?: any) {
