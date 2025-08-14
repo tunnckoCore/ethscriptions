@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 
-import { ORPCError, onError, os, ValidationError } from '@orpc/server';
-import z from 'zod';
+import { ORPCError, os } from '@orpc/server';
 // Import original utilities until they are converted
 import {
   isEthereumAddress,

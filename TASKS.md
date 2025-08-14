@@ -9,6 +9,9 @@ Convert the existing ethscriptions-core functions into a type-safe oRPC router w
 - merge all arguments of functions into a single orpc/zod `input` object schema, eg. do not make `z.object({ mainArg: foo, options: bar })` kind of things. Merge them.
 - Keep existing functions, do not touch or change them, work only on the separate new directory `new_src`
 - Do NOT use the OpenAPI feature and RPCHandler/RPCLinks of orpc.
+- don't use `.merge` use `.extend(schema.shape)`
+- use BooleanSchema for booleans
+- always follow the exact demo style `if (result.error) { log result?.error as any)?.data?.issues?.[0]?.errors } else {}
 
 ## Architecture Goals
 - **Procedures**: Convert all 11 functions to oRPC procedures with Zod validation
