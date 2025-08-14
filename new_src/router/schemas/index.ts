@@ -189,20 +189,18 @@ export const UserProfileResultSchema = z.object({
   previous: z.array(EthscriptionBaseSchema),
 });
 
-export const DigestResultSchema = z.object({
-  sha: HashSchema.or(HashWithPrefixSchema),
-  hex: HexStringSchema,
-  input: z.string(),
-});
+export const DigestResultSchema = z
+  .object({
+    sha: HashSchema.or(HashWithPrefixSchema),
+    hex: HexStringSchema,
+    input: z.string(),
+  })
+  .strict();
 
 export const CheckExistResultSchema = z.record(
   HexStringSchema,
   z.union([HexStringSchema, EthscriptionBaseSchema.partial()])
 );
-
-export const DigestResultWithCheckSchema = DigestResultSchema.extend({
-  exists: CheckExistResultSchema,
-});
 
 export const OwnersResultSchema = z.object({
   latest_transfer_timestamp: NumberLikeSchema,

@@ -3,10 +3,17 @@
 // import z from 'zod';
 import { client, unsafeClient } from './new_src/index.ts';
 
-const [error, data] = await client.getUserProfile({
-  user: 'wgw.lol',
-  latest: false,
-});
+// DO NOT REMOVE
+// const [error, data] = await client.getDigestForData({
+//   input: 'data:,wgw.lol',
+//   checkExists: true,
+//   expand: true,
+//   with: 'content_uri,ethscription_number',
+//   only: 'content_uri,ethscription_number,transation_index,transaction_hash,block_number,block_hash',
+// });
+
+// UPDATE WHEN DONE WITH A PROCEDURE
+const [error, data] = [null, null];
 
 if (error) {
   console.error(

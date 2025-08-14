@@ -76,7 +76,7 @@ export const multiCheckExistsProcedure = os
           const { ok, result } = (await getEthscriptionDetailed(
             id as string,
             'meta',
-            { baseURL: input.baseURL }
+            input
           )) as any;
 
           return [sha, ok ? result : id];

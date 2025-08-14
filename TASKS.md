@@ -147,8 +147,8 @@ async function resolveUser(val: string, options?: any): Promise<Result<ResolveUs
 - `new_src/router/procedures/resolve-user.ts`
 - `new_src/router/index.ts` (add to router)
 
-#### Task 2.4: Convert `getUserProfile()` ⏳
-**Status**: Not Started
+#### Task 2.4: Convert `getUserProfile()` ✅
+**Status**: Completed
 **Priority**: Medium
 **Estimated Time**: 1.5 hours
 
@@ -158,21 +158,21 @@ async function getUserProfile(val: string, options?: any): Promise<Result<UserPr
 ```
 
 **Acceptance Criteria**:
-- [ ] Create Zod schema for val input
-- [ ] Create Zod schema for options parameter (including latest flag)
-- [ ] Create Zod schema for UserProfileResult output (handle union type)
-- [ ] Convert function to oRPC procedure
-- [ ] Handle conditional return type based on options.latest
-- [ ] Add procedure to router
-- [ ] Update progress in this file
+- [x] Create Zod schema for val input
+- [x] Create Zod schema for options parameter (including latest flag)
+- [x] Create Zod schema for UserProfileResult output (handle union type)
+- [x] Convert function to oRPC procedure
+- [x] Handle conditional return type based on options.latest
+- [x] Add procedure to router
+- [x] Update progress in this file
 
 **Files to Create/Modify**:
 - `new_src/router/schemas/user-profile.ts`
 - `new_src/router/procedures/user-profile.ts`
 - `new_src/router/index.ts` (add to router)
 
-#### Task 2.5: Convert `getDigestForData()` ⏳
-**Status**: Not Started
+#### Task 2.5: Convert `getDigestForData()` ✅
+**Status**: Completed
 **Priority**: High
 **Estimated Time**: 2 hours
 
@@ -182,14 +182,14 @@ async function getDigestForData(input: `data:${string}` | `0x${string}` | Uint8A
 ```
 
 **Acceptance Criteria**:
-- [ ] Create Zod schema for complex input union type
-- [ ] Create Zod schema for options parameter (including checkExists flag)
-- [ ] Create Zod schemas for DigestResult and DigestResultWithCheck outputs
-- [ ] Convert function to oRPC procedure
-- [ ] Handle Uint8Array serialization/deserialization
-- [ ] Handle conditional return type based on options.checkExists
-- [ ] Add procedure to router
-- [ ] Update progress in this file
+- [x] Create Zod schema for complex input union type
+- [x] Create Zod schema for options parameter (including checkExists flag)
+- [x] Create Zod schemas for DigestResult and DigestResultWithCheck outputs
+- [x] Convert function to oRPC procedure
+- [x] Handle Uint8Array serialization/deserialization
+- [x] Handle conditional return type based on options.checkExists
+- [x] Add procedure to router
+- [x] Update progress in this file
 
 **Files to Create/Modify**:
 - `new_src/router/schemas/digest.ts`
@@ -384,15 +384,17 @@ async function estimateDataCost(input: `data:${string}` | `0x${string}` | Uint8A
 
 ## Progress Tracking
 
-### Completed Tasks: 4/15 (26.7%)
+### Completed Tasks: 6/15 (40.0%)
 - Task 1.1: Setup Basic oRPC Infrastructure ✅
 - Task 2.1: Convert `getPrices()` ✅
 - Task 2.2: Convert `multiCheckExists()` ✅
 - Task 2.3: Convert `resolveUser()` ✅
+- Task 2.4: Convert `getUserProfile()` ✅
+- Task 2.5: Convert `getDigestForData()` ✅
 
-### Current Task: Task 2.4 - Convert `getUserProfile()`
+### Current Task: Task 2.6 - Convert `getUserCreatedEthscritions()`
 
-### Next Up: Task 2.5 - Convert `getDigestForData()`
+### Next Up: Task 2.7 - Convert `getUserOwnedEthscriptions()`
 
 ---
 
