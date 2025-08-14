@@ -4,14 +4,15 @@ import type { RouterClient } from '@orpc/server';
 import { multiCheckExistsProcedure } from './procedures/check-exists.ts';
 import { pricesProcedure } from './procedures/prices.ts';
 import { resolveUserProcedure } from './procedures/resolve-user.ts';
+import { getUserProfileProcedure } from './procedures/user-profile.ts';
 
 // Main router - procedures will be added here as they're converted
 export const router = {
   prices: pricesProcedure,
   multiCheckExists: multiCheckExistsProcedure,
   resolveUser: resolveUserProcedure,
+  getUserProfile: getUserProfileProcedure,
   // Procedures will be added here incrementally
-  // getUserProfile: getUserProfileProcedure,
   // getDigestForData: getDigestForDataProcedure,
   // getUserCreatedEthscriptions: getUserCreatedEthscriptionsProcedure,
   // getUserOwnedEthscriptions: getUserOwnedEthscriptionsProcedure,

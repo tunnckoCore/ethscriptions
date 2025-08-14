@@ -51,6 +51,7 @@
     "file-type": "^21.0.0",
     "qs-esm": "^7.0.2",
     "server-only": "^0.0.1",
+    "zagora": "^0.1.5",
     "zod": "^4.0.17"
   },
   "devDependencies": {

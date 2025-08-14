@@ -191,18 +191,18 @@ export function normalizeResult(result: any, options?: any): EthscriptionBase {
   }
 
   const res = {
-    block_number: String(result.block_number),
+    block_number: Number(result.block_number),
     block_blockhash: result.block_blockhash,
-    block_timestamp: String(result.block_timestamp),
+    block_timestamp: Number(result.block_timestamp),
     block_datetime: new Date(
       Number(result.block_timestamp) * 1000
     ).toISOString(),
     transaction_hash: result.transaction_hash,
-    transaction_index: String(result.transaction_index),
-    transaction_value: String(result.value).replace(/\.0$/, ''),
-    transaction_fee: String(result.transaction_fee).replace(/\.0$/, ''),
-    gas_price: String(result.gas_price).replace(/\.0$/, ''),
-    gas_used: String(result.gas_used),
+    transaction_index: Number(result.transaction_index),
+    transaction_value: Number(String(result.value).replace(/\.0$/, '')),
+    transaction_fee: Number(String(result.transaction_fee).replace(/\.0$/, '')),
+    gas_price: Number(String(result.gas_price).replace(/\.0$/, '')),
+    gas_used: Number(result.gas_used),
     creator: result.creator,
     receiver: result.initial_owner,
     media_type: result.media_type,
@@ -248,7 +248,7 @@ export function normalizeResult(result: any, options?: any): EthscriptionBase {
     return acc;
   }, onlyRes);
 
-  console.log('withRes:', withRes);
+  // console.log('withRes:', withRes);
   return withRes.length > 0 ? (withRes as typeof withRes) : (onlyRes as any);
 }
 

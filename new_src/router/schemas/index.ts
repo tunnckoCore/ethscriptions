@@ -23,11 +23,17 @@ export const IdSchema = z
       })
   );
 
+export const NumericStringSchema = z
+  .string()
+  .regex(/^\d+$/, 'Must be a numeric string');
+
 export const NumberSchema = z
   .string()
   .regex(/^\d+$/, 'Must be a numeric string')
   .transform(Number)
   .pipe(PositiveNumberSchema);
+
+export const NumberLikeSchema = PositiveNumberSchema.or(NumberSchema);
 
 export const HexStringSchema = z.custom<string | `0x${string}`>(
   (x) =>
@@ -72,52 +78,87 @@ export const ContentTypeSchema = z
     message: 'Invalid Content Type format, must be like "image/png"',
   });
 
+// block_number: 18162935,
+// block_blockhash: "0x9d4e214cd06998f91f8c13f372302050029cdb5e67dfeb6514f996603ce0b3d9",
+// block_timestamp: 1695041507,
+// block_datetime: "2023-09-18T12:51:47.000Z",
+// transaction_hash: "0x02fd6cd9df507b917e644bc8d23082f7548fdca683c91f058abd5a6fe896facb",
+// transaction_index: 94,
+// transaction_value: 0,
+// transaction_fee: 461441903696920,
+// gas_price: 14474338259,
+// gas_used: 31880,
+// creator: "0xa20c07f94a127fd76e61fbea1019cce759225002",
+// receiver: "0x0000000000000000000000000000000000000000",
+// media_type: "application",
+// media_subtype: "vnd.esc.user.profile+json",
+// content_type: "application/vnd.esc.user.profile+json",
+// content_sha: "0x0472c07618add66690675704af1fe2e547451a0721b1ec73ff1c53ccb7a81aee",
+// content_path: "/ethscriptions/0x02fd6cd9df507b917e644bc8d23082f7548fdca683c91f058abd5a6fe896facb/content",
+// owners_path: "/ethscriptions/0x02fd6cd9df507b917e644bc8d23082f7548fdca683c91f058abd5a6fe896facb/owners",
+// numbers_path: "/ethscriptions/0x02fd6cd9df507b917e644bc8d23082f7548fdca683c91f058abd5a6fe896facb/numbers",
+// transfers_path: "/ethscriptions/0x02fd6cd9df507b917e644bc8d23082f7548fdca683c91f058abd5a6fe896facb/transfers",
+// is_esip0: true,
+// is_esip3: false,
+// is_esip4: false,
+// is_esip6: false,
+// is_esip8: false,
 // Base ethscription schema
-export const EthscriptionBaseSchema = z.object({
-  block_number: PositiveNumberSchema.or(NumberSchema),
-  block_blockhash: HashWithPrefixSchema,
-  block_timestamp: PositiveNumberSchema.or(NumberSchema),
-  block_datetime: z.iso.datetime(),
+export const EthscriptionBaseSchema = z
+  .object({
+    block_number: NumberLikeSchema,
+    block_blockhash: HashWithPrefixSchema,
+    block_timestamp: NumberLikeSchema,
+    block_datetime: z.iso.datetime(),
 
-  event_log_index: PositiveNumberSchema.or(NumberSchema).nullable(),
-  transaction_hash: HashWithPrefixSchema,
-  transaction_index: PositiveNumberSchema.or(NumberSchema),
-  transaction_value: PositiveNumberSchema.or(NumberSchema),
-  transaction_fee: PositiveNumberSchema.or(NumberSchema),
-  gas_price: PositiveNumberSchema.or(NumberSchema),
-  gas_used: PositiveNumberSchema.or(NumberSchema),
-  creator: EthereumAddressSchema,
-  receiver: EthereumAddressSchema,
-  media_type: MediaTypeSchema,
-  media_subtype: z.string(),
-  content_type: ContentTypeSchema,
-  content_sha: HashWithPrefixSchema,
-  content_path: z.string().startsWith('/ethscriptions/'),
-  owners_path: z.string().startsWith('/ethscriptions/'),
-  numbers_path: z.string().startsWith('/ethscriptions/'),
-  transfers_path: z.string().startsWith('/ethscriptions/'),
-  is_esip0: z.boolean(),
-  is_esip3: z.boolean(),
-  is_esip4: z.boolean(),
-  is_esip6: z.boolean(),
-  is_esip8: z.boolean(),
-});
+    transaction_hash: HashWithPrefixSchema,
+    transaction_index: NumberLikeSchema,
+    transaction_value: NumberLikeSchema,
+    transaction_fee: NumberLikeSchema,
+
+    gas_price: NumberLikeSchema,
+    gas_used: NumberLikeSchema,
+
+    creator: EthereumAddressSchema,
+    receiver: EthereumAddressSchema,
+
+    media_type: MediaTypeSchema,
+    media_subtype: z.string(),
+
+    content_type: ContentTypeSchema,
+    content_sha: HashWithPrefixSchema,
+
+    content_path: z.string().startsWith('/ethscriptions/'),
+    owners_path: z.string().startsWith('/ethscriptions/'),
+    numbers_path: z.string().startsWith('/ethscriptions/'),
+    transfers_path: z.string().startsWith('/ethscriptions/'),
+
+    is_esip0: z.boolean(),
+    is_esip3: z.boolean(),
+    is_esip4: z.boolean(),
+    is_esip6: z.boolean(),
+    is_esip8: z.boolean(),
+  })
+  .loose();
+export type Ethscription = z.infer<typeof EthscriptionBaseSchema>;
 
 // Ethscription transfer schema
-export const EthscriptionTransferSchema = z.object({
-  transaction_hash: HashWithPrefixSchema,
-  from_address: EthereumAddressSchema,
-  to_address: EthereumAddressSchema,
-  block_number: PositiveNumberSchema.or(NumberSchema),
-  block_timestamp: PositiveNumberSchema.or(NumberSchema),
-  block_blockhash: HashWithPrefixSchema,
-  event_log_index: PositiveNumberSchema.or(NumberSchema).nullable(),
-  transaction_index: PositiveNumberSchema.or(NumberSchema),
-  enforced_previous_owner: EthereumAddressSchema.nullable(),
-  is_esip0: z.boolean(),
-  is_esip1: z.boolean(),
-  is_esip2: z.boolean(),
-});
+export const EthscriptionTransferSchema = z
+  .object({
+    transaction_hash: HashWithPrefixSchema,
+    from_address: EthereumAddressSchema,
+    to_address: EthereumAddressSchema,
+    block_number: NumberLikeSchema,
+    block_timestamp: NumberLikeSchema,
+    block_blockhash: HashWithPrefixSchema,
+    event_log_index: NumberLikeSchema.nullable(),
+    transaction_index: NumberLikeSchema,
+    enforced_previous_owner: EthereumAddressSchema.nullable(),
+    is_esip0: z.boolean(),
+    is_esip1: z.boolean(),
+    is_esip2: z.boolean(),
+  })
+  .loose();
 
 // Common options schema pieces
 export const BaseOptionsSchema = z.object({
@@ -164,9 +205,9 @@ export const DigestResultWithCheckSchema = DigestResultSchema.extend({
 });
 
 export const OwnersResultSchema = z.object({
-  latest_transfer_timestamp: PositiveNumberSchema.or(NumberSchema),
+  latest_transfer_timestamp: NumberLikeSchema,
   latest_transfer_datetime: z.iso.datetime(),
-  latest_transfer_block: PositiveNumberSchema.or(NumberSchema),
+  latest_transfer_block: NumberLikeSchema,
   creator: EthereumAddressSchema,
   initial: EthereumAddressSchema,
   current: EthereumAddressSchema,
@@ -174,16 +215,16 @@ export const OwnersResultSchema = z.object({
 });
 
 export const NumbersResultSchema = z.object({
-  block_timestamp: PositiveNumberSchema.or(NumberSchema),
+  block_timestamp: NumberLikeSchema,
   block_datetime: z.iso.datetime(),
   block_blockhash: HashWithPrefixSchema,
-  block_number: PositiveNumberSchema.or(NumberSchema),
+  block_number: NumberLikeSchema,
   block_number_fmt: z.string(),
-  transaction_index: PositiveNumberSchema.or(NumberSchema),
-  event_log_index: PositiveNumberSchema.or(NumberSchema).nullable(),
-  ethscription_number: PositiveNumberSchema.or(NumberSchema).nullable(),
+  transaction_index: NumberLikeSchema,
+  event_log_index: NumberLikeSchema.nullable(),
+  ethscription_number: NumberLikeSchema.nullable(),
   ethscription_number_fmt: z.string(),
-  transfers_count: PositiveNumberSchema.or(NumberSchema),
+  transfers_count: NumberLikeSchema,
 });
 
 export const BaseCostOptsSchema = z.object({
@@ -236,6 +277,7 @@ export const BaseQuerySchema = z.object({
   resolve: BooleanSchema.optional(),
   reverse: BooleanSchema.optional(),
   expand: BooleanSchema.optional(),
+  transaction_hash_only: BooleanSchema.optional(),
 });
 
 // Utility functions

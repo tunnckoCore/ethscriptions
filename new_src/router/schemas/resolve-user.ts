@@ -9,15 +9,10 @@ import {
 } from '../schemas/index.ts';
 
 // Input schema for resolveUser procedure
-export const ResolveUserInputSchema = z
-  .object({
-    user: EthereumAddressSchema.or(z.string().min(1)),
-  })
-  .extend(
-    BaseQuerySchema.extend({
-      checkCreator: BooleanSchema.default(false),
-    }).shape
-  );
+export const ResolveUserInputSchema = BaseQuerySchema.extend({
+  user: EthereumAddressSchema.or(z.string().min(1)),
+  checkCreator: BooleanSchema.default(false),
+});
 
 // Output schema (reuse existing)
 export const ResolveUserOutputSchema = ResolveUserResultSchema;
