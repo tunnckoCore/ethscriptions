@@ -1,0 +1,65 @@
+{
+  "name": "ethscriptions",
+  "version": "0.9.10",
+  "license": "MPL-2.0",
+  "description": "Library with utility functions for Ethscriptions. Supports for fetching user profiles, filtering ethscriptions, and resolving names & ENS builtin",
+  "author": "wgw <wgw@wgw.lol>",
+  "homepage": "https://github.com/tunnckoCore/calldata.space",
+  "funding": [
+    "https://ko-fi.com/tunnckoCore/commissions",
+    "https://github.com/sponsors/tunnckoCore"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tunnckoCore/calldata.space.git"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "tsdown src/index.ts --dts",
+    "prepublishOnly": "bun run build",
+    "fmt": "ultracite format"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "src",
+    "dist"
+  ],
+  "engines": {
+    "bun": ">=1.1.40",
+    "node": ">=20",
+    "npm": "please-use-bun",
+    "yarn": "please-use-bun-yarn-is-dead"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org",
+    "tag": "latest"
+  },
+  "dependencies": {
+    "@orpc/client": "^1.8.0",
+    "@orpc/server": "^1.8.0",
+    "@orpc/tanstack-query": "^1.8.0",
+    "cdn-cache-control": "^1.1.0",
+    "file-type": "^21.0.0",
+    "qs-esm": "^7.0.2",
+    "server-only": "^0.0.1",
+    "zod": "^4.0.17"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.1.4",
+    "@types/bun": "^1.2.20",
+    "@types/node": "^24.2.1",
+    "tsdown": "^0.14.1",
+    "typescript": "^5.9.2",
+    "ultracite": "^5.1.2"
+  },
+  "packageManager": "bun@1.1.40"
+}
