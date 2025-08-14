@@ -95,8 +95,8 @@ async function getPrices(speed: 'slow' | 'normal' | 'fast' = 'normal'): Promise<
 - `new_src/router/procedures/prices.ts`
 - `new_src/router/index.ts` (add to router)
 
-#### Task 2.2: Convert `multiCheckExists()` ⏳
-**Status**: Not Started
+#### Task 2.2: Convert `multiCheckExists()` ✅
+**Status**: Completed
 **Priority**: High
 **Estimated Time**: 2 hours
 
@@ -106,22 +106,22 @@ async function multiCheckExists(shas: string | `0x${string}` | (string | `0x${st
 ```
 
 **Acceptance Criteria**:
-- [ ] Create Zod schema for shas input (handle string/array union)
-- [ ] Create Zod schema for options parameter
-- [ ] Create Zod schema for CheckExistResult output
-- [ ] Convert function to oRPC procedure
-- [ ] Handle array normalization in procedure
-- [ ] Add procedure to router
-- [ ] Test with various input formats
-- [ ] Update progress in this file
+- [x] Create Zod schema for shas input (handle string/array union)
+- [x] Create Zod schema for options parameter
+- [x] Create Zod schema for CheckExistResult output
+- [x] Convert function to oRPC procedure
+- [x] Handle array normalization in procedure
+- [x] Add procedure to router
+- [x] Test with various input formats
+- [x] Update progress in this file
 
 **Files to Create/Modify**:
 - `new_src/router/schemas/check-exists.ts`
 - `new_src/router/procedures/check-exists.ts`
 - `new_src/router/index.ts` (add to router)
 
-#### Task 2.3: Convert `resolveUser()` ⏳
-**Status**: Not Started
+#### Task 2.3: Convert `resolveUser()` ✅
+**Status**: Completed
 **Priority**: Medium
 **Estimated Time**: 1 hour
 
@@ -131,13 +131,13 @@ async function resolveUser(val: string, options?: any): Promise<Result<ResolveUs
 ```
 
 **Acceptance Criteria**:
-- [ ] Create Zod schema for val input (string validation)
-- [ ] Create Zod schema for options parameter
-- [ ] Create Zod schema for ResolveUserResult output
-- [ ] Convert function to oRPC procedure
-- [ ] Handle address/name resolution logic
-- [ ] Add procedure to router
-- [ ] Update progress in this file
+- [x] Create Zod schema for val input (string validation)
+- [x] Create Zod schema for options parameter
+- [x] Create Zod schema for ResolveUserResult output
+- [x] Convert function to oRPC procedure
+- [x] Handle address/name resolution logic
+- [x] Add procedure to router
+- [x] Update progress in this file
 
 **Files to Create/Modify**:
 - `new_src/router/schemas/resolve-user.ts`
@@ -381,13 +381,15 @@ async function estimateDataCost(input: `data:${string}` | `0x${string}` | Uint8A
 
 ## Progress Tracking
 
-### Completed Tasks: 2/15 (13.3%)
+### Completed Tasks: 4/15 (26.7%)
 - Task 1.1: Setup Basic oRPC Infrastructure ✅
 - Task 2.1: Convert `getPrices()` ✅
+- Task 2.2: Convert `multiCheckExists()` ✅
+- Task 2.3: Convert `resolveUser()` ✅
 
-### Current Task: Task 2.2 - Convert `multiCheckExists()`
+### Current Task: Task 2.4 - Convert `getUserProfile()`
 
-### Next Up: Task 2.3 - Convert `resolveUser()`
+### Next Up: Task 2.5 - Convert `getDigestForData()`
 
 ---
 
