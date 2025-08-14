@@ -162,7 +162,7 @@ export const EthscriptionTransferSchema = z
 
 // Common options schema pieces
 export const BaseOptionsSchema = z.object({
-  baseURL: z.url().optional(),
+  baseURL: z.url().default(BASE_API_URL),
 });
 
 // Speed enum for gas prices
@@ -268,15 +268,20 @@ export const EnumAllDetailedSchema = z.enum([
   'blob',
 ]);
 
-export const BaseQuerySchema = z.object({
-  baseURL: z.url().default(BASE_API_URL),
-  with: z.string().optional(),
-  only: z.string().optional(),
-  resolve: BooleanSchema.optional(),
-  reverse: BooleanSchema.optional(),
-  expand: BooleanSchema.optional(),
-  transaction_hash_only: BooleanSchema.optional(),
-});
+export const BaseQuerySchema = BaseOptionsSchema.extend(
+  z
+    .object({
+      with: z.string(),
+      only: z.string(),
+      resolve: BooleanSchema,
+      reverse: BooleanSchema,
+      expand: BooleanSchema,
+      transaction_hash_only: BooleanSchema,
+      page_size: z.number().int().min(1).max(100),
+      page_key: HashWithPrefixSchema,
+    })
+    .partial().shape
+);
 
 // Utility functions
 export const createPaginationSchema = () =>

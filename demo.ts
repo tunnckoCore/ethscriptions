@@ -13,7 +13,11 @@ import { client, unsafeClient } from './new_src/index.ts';
 // });
 
 // UPDATE WHEN DONE WITH A PROCEDURE
-const [error, data] = [null, null];
+// const [error, data] = await client.getUserCreatedEthscriptions({
+//   user: 'wgw',
+//   page_size: 5,
+// });
+const [error, data] = await [null, 1];
 
 if (error) {
   console.error(

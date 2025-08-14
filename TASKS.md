@@ -196,8 +196,8 @@ async function getDigestForData(input: `data:${string}` | `0x${string}` | Uint8A
 - `new_src/router/procedures/digest.ts`
 - `new_src/router/index.ts` (add to router)
 
-#### Task 2.6: Convert `getUserCreatedEthscritions()` ⏳
-**Status**: Not Started
+#### Task 2.6: Convert `getUserCreatedEthscritions()` ✅
+**Status**: Completed
 **Priority**: Medium
 **Estimated Time**: 1 hour
 
@@ -207,13 +207,13 @@ async function getUserCreatedEthscritions(val: string, options?: any): Promise<R
 ```
 
 **Acceptance Criteria**:
-- [ ] Create Zod schema for val input
-- [ ] Create Zod schema for options parameter
-- [ ] Create Zod schema for EthscriptionBase[] output
-- [ ] Convert function to oRPC procedure
-- [ ] Delegate to getAllEthscriptions with creator filter
-- [ ] Add procedure to router
-- [ ] Update progress in this file
+- [x] Create Zod schema for val input
+- [x] Create Zod schema for options parameter
+- [x] Create Zod schema for EthscriptionBase[] output
+- [x] Convert function to oRPC procedure
+- [x] Delegate to getAllEthscriptions with creator filter
+- [x] Add procedure to router
+- [x] Update progress in this file
 
 **Files to Create/Modify**:
 - `new_src/router/schemas/user-created.ts`
@@ -384,17 +384,18 @@ async function estimateDataCost(input: `data:${string}` | `0x${string}` | Uint8A
 
 ## Progress Tracking
 
-### Completed Tasks: 6/15 (40.0%)
+### Completed Tasks: 7/15 (46.7%)
 - Task 1.1: Setup Basic oRPC Infrastructure ✅
 - Task 2.1: Convert `getPrices()` ✅
 - Task 2.2: Convert `multiCheckExists()` ✅
 - Task 2.3: Convert `resolveUser()` ✅
 - Task 2.4: Convert `getUserProfile()` ✅
 - Task 2.5: Convert `getDigestForData()` ✅
+- Task 2.6: Convert `getUserCreatedEthscritions()` ✅
 
-### Current Task: Task 2.6 - Convert `getUserCreatedEthscritions()`
+### Current Task: Task 2.7 - Convert `getUserOwnedEthscriptions()`
 
-### Next Up: Task 2.7 - Convert `getUserOwnedEthscriptions()`
+### Next Up: Task 2.8 - Convert `getAllEthscriptions()`
 
 ---
 

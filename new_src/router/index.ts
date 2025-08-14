@@ -5,6 +5,7 @@ import { multiCheckExistsProcedure } from './procedures/check-exists.ts';
 import { getDigestForDataProcedure } from './procedures/digest.ts';
 import { pricesProcedure } from './procedures/prices.ts';
 import { resolveUserProcedure } from './procedures/resolve-user.ts';
+import { getUserCreatedEthscriptionsProcedure } from './procedures/user-created.ts';
 import { getUserProfileProcedure } from './procedures/user-profile.ts';
 
 // Main router - procedures will be added here as they're converted
@@ -14,8 +15,8 @@ export const router = {
   resolveUser: resolveUserProcedure,
   getUserProfile: getUserProfileProcedure,
   getDigestForData: getDigestForDataProcedure,
+  getUserCreatedEthscriptions: getUserCreatedEthscriptionsProcedure,
   // Procedures will be added here incrementally
-  // getUserCreatedEthscriptions: getUserCreatedEthscriptionsProcedure,
   // getUserOwnedEthscriptions: getUserOwnedEthscriptionsProcedure,
   // getAllEthscriptions: getAllEthscriptionsProcedure,
   // getEthscriptionById: getEthscriptionByIdProcedure,
