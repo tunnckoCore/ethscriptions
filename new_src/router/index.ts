@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: MPL-2.0
 
 import type { RouterClient } from '@orpc/server';
+import { multiCheckExistsProcedure } from './procedures/check-exists.ts';
 import { pricesProcedure } from './procedures/prices.ts';
 
 // Main router - procedures will be added here as they're converted
 export const router = {
   prices: pricesProcedure,
+  multiCheckExists: multiCheckExistsProcedure,
   // Procedures will be added here incrementally
-  // multiCheckExists: multiCheckExistsProcedure,
   // resolveUser: resolveUserProcedure,
   // getUserProfile: getUserProfileProcedure,
   // getDigestForData: getDigestForDataProcedure,

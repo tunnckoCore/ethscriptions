@@ -72,8 +72,8 @@ ethscriptions-core/
 
 ### Phase 2: Procedure Conversions
 
-#### Task 2.1: Convert `getPrices()` ⏳
-**Status**: Not Started
+#### Task 2.1: Convert `getPrices()` ✅
+**Status**: Completed
 **Priority**: High
 **Estimated Time**: 1.5 hours
 
@@ -83,12 +83,12 @@ async function getPrices(speed: 'slow' | 'normal' | 'fast' = 'normal'): Promise<
 ```
 
 **Acceptance Criteria**:
-- [ ] Create Zod schema for input (speed parameter)
-- [ ] Create Zod schema for output
-- [ ] Convert function to oRPC procedure with proper error handling
-- [ ] Add procedure to router
-- [ ] Test procedure works with existing logic
-- [ ] Update progress in this file
+- [x] Create Zod schema for input (speed parameter)
+- [x] Create Zod schema for output
+- [x] Convert function to oRPC procedure with proper error handling
+- [x] Add procedure to router
+- [x] Test procedure works with existing logic
+- [x] Update progress in this file
 
 **Files to Create/Modify**:
 - `new_src/router/schemas/prices.ts`
@@ -381,12 +381,13 @@ async function estimateDataCost(input: `data:${string}` | `0x${string}` | Uint8A
 
 ## Progress Tracking
 
-### Completed Tasks: 1/15 (6.7%)
+### Completed Tasks: 2/15 (13.3%)
 - Task 1.1: Setup Basic oRPC Infrastructure ✅
+- Task 2.1: Convert `getPrices()` ✅
 
-### Current Task: Task 2.1 - Convert `getPrices()`
+### Current Task: Task 2.2 - Convert `multiCheckExists()`
 
-### Next Up: Task 2.2 - Convert `multiCheckExists()`
+### Next Up: Task 2.3 - Convert `resolveUser()`
 
 ---
 
