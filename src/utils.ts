@@ -510,7 +510,7 @@ export async function createDigest(
   algo: 'SHA-1' | 'SHA-256' | 'SHA-512' = 'SHA-256'
 ): Promise<string> {
   const data = typeof msg === 'string' ? new TextEncoder().encode(msg) : msg;
-  const hashBuffer = await crypto.subtle.digest(algo, data);
+  const hashBuffer = await crypto.subtle.digest(algo, data as any);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   const hashHex = hashArray
     .map((b) => b.toString(16).padStart(2, '0'))
