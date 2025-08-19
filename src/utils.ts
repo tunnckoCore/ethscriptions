@@ -160,9 +160,9 @@ export function normalizeAndSortTransfers(
   return (
     transfers
 
-      .map(({ ethscription_transaction_hash, ...x }, idx) => ({
+      .map(({ ethscription_transaction_hash, block_blockhash, ...x }, idx) => ({
         ...x,
-
+        block_hash: block_blockhash,
         is_esip0: idx === 0,
         // theoretically, it could be ESIP-1 Transfer too, but ESIP-2 is more used and more likely
         is_esip1: Boolean(x.event_log_index !== null),

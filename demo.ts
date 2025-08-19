@@ -19,22 +19,16 @@ import type { GetAllEthscritionsInput } from './new_src/router/schemas/all-ethsc
 //   page_size: 5,
 // });
 try {
-  const res =
-    await unsafeSDK.getUserOwnedEthscriptions<GetAllEthscritionsInput>({
-      baseURL: 'https://sepolia-api-v2.ethscriptions.com',
-      user: 'wgw',
-      resolve: true,
-      page_key:
-        '0x4b4650078d2f2a8fdc1fda9410dfd17f8630e322341fed8c477023f6a6e25cd2',
-      // page_size: 50,
-      // media_type: 'font',
-      with: 'ethscription_number',
-      // input: bytesToHex(new TextEncoder().encode('data:,wgw.lol')),
-    });
+  const res = await unsafeSDK.getEthscriptionDetailed({
+    // baseURL: 'https://sepolia-api-v2.ethscriptions.com',
+    id: '111,111',
+    mode: 'transfers',
+    // input: bytesToHex(new TextEncoder().encode('data:,wgw.lol')),
+  });
 
   console.log('RESULT>>>', res);
 } catch (e: any) {
-  console.error(e.cause.issues);
+  console.error('ERROR>>>', getError(e), getError(e.cause));
 }
 // if (error) {
 //   console.error(
@@ -47,12 +41,12 @@ try {
 //   console.log('RESULT:', data);
 // }
 
-// function getError(e: any) {
-//   return (
-//     e?.cause?.issues?.[0]?.errors ||
-//     (e as any)?.issues ||
-//     (e as any)?.data?.issues?.[0]?.errors ||
-//     (e as any)?.data?.issues?.[0] ||
-//     (e as any)?.data
-//   );
-// }
+function getError(e: any) {
+  return (
+    e?.cause?.issues?.[0]?.errors ||
+    (e as any)?.issues ||
+    (e as any)?.data?.issues?.[0]?.errors ||
+    (e as any)?.data?.issues?.[0] ||
+    (e as any)?.data
+  );
+}

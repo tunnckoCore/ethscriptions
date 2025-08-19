@@ -1,25 +1,25 @@
 // SPDX-License-Identifier: MPL-2.0
 
-import { ORPCError, os } from '@orpc/server';
+import { os, safe } from '@orpc/server';
 // Import original utilities until they are converted
-import { getEthscriptionDetailed } from '../../../src/index.ts';
 import {
   GetEthscriptionByIdInputSchema,
+  type GetEthscriptionByIdOutput,
   GetEthscriptionByIdOutputSchema,
 } from '../schemas/ethscription-by-id.ts';
+import { getEthscriptionDetailedProcedure } from './ethscription-detailed.ts';
 
 export const getEthscriptionByIdProcedure = os
   .input(GetEthscriptionByIdInputSchema)
   .output(GetEthscriptionByIdOutputSchema)
   .handler(async ({ input }) => {
-    const result = await getEthscriptionDetailed(input.id, 'meta', input);
+    const detailedResult = await safe(
+      getEthscriptionDetailedProcedure.callable()({ ...input, mode: 'meta' })
+    );
 
-    if (!result.ok) {
-      throw new ORPCError('INTERNAL_SERVER_ERROR', {
-        message: result.error?.message || 'Failed to fetch ethscription by id',
-        status: result.error?.httpStatus || 500,
-      });
+    if (detailedResult.error) {
+      throw detailedResult.error;
     }
 
-    return result.result;
+    return detailedResult.data as GetEthscriptionByIdOutput;
   });
