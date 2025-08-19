@@ -1,6 +1,6 @@
 {
   "name": "ethscriptions",
-  "version": "0.9.10",
+  "version": "0.10.0",
   "license": "MPL-2.0",
   "description": "Library with utility functions for Ethscriptions. Supports for fetching user profiles, filtering ethscriptions, and resolving names & ENS builtin",
   "author": "wgw <wgw@wgw.lol>",
@@ -16,7 +16,8 @@
   "type": "module",
   "scripts": {
     "build": "tsdown src/index.ts --dts",
-    "prepublishOnly": "bun run build",
+    "build:orpc": "tsdown orpc/index.ts --dts --out-dir ./dist/orpc",
+    "prepublishOnly": "bun run build && bun run build:orpc",
     "fmt": "ultracite format"
   },
   "exports": {
@@ -24,17 +25,26 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./orpc-source": {
+      "types": "./orpc/index.ts",
+      "default": "./orpc/index.ts"
+    },
+    "./orpc": {
+      "types": "./dist/orpc/index.d.ts",
+      "default": "./dist/orpc/index.js"
     }
   },
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
     "src",
-    "dist"
+    "dist",
+    "orpc"
   ],
   "engines": {
     "bun": ">=1.1.40",
-    "node": ">=20",
+    "node": ">=22",
     "npm": "please-use-bun",
     "yarn": "please-use-bun-yarn-is-dead"
   },
@@ -46,12 +56,9 @@
   "dependencies": {
     "@orpc/client": "^1.8.0",
     "@orpc/server": "^1.8.0",
-    "@orpc/tanstack-query": "^1.8.0",
     "cdn-cache-control": "^1.1.0",
     "file-type": "^21.0.0",
     "qs-esm": "^7.0.2",
-    "server-only": "^0.0.1",
-    "zagora": "^0.1.5",
     "zod": "^4.0.17"
   },
   "devDependencies": {

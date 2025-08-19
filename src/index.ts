@@ -580,7 +580,8 @@ export async function getEthscriptionDetailed<T extends EnumAllDetailed>(
         block_datetime: new Date(
           Number(result.block_timestamp) * 1000
         ).toISOString(),
-        block_blockhash: result.block_blockhash,
+        block_blockhash:
+          (result as any).block_blockhash || (result as any).block_hash,
         block_number: result.block_number,
         block_number_fmt: numberFormat(result.block_number),
         transaction_index: result.transaction_index,

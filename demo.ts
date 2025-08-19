@@ -1,8 +1,7 @@
 // import { createSafeClient } from '@orpc/client';
 // import { call, createRouterClient, os } from '@orpc/server';
 // import z from 'zod';
-import { sdk, unsafeSDK } from './new_src/index.ts';
-import type { GetAllEthscritionsInput } from './new_src/router/schemas/all-ethscriptions.ts';
+import { sdk, unsafeSDK } from './orpc/index.ts';
 
 // DO NOT REMOVE
 // const [error, data] = await client.getDigestForData({
