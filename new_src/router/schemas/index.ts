@@ -83,7 +83,7 @@ export const ContentTypeSchema = z
   });
 
 // block_number: 18162935,
-// block_blockhash: "0x9d4e214cd06998f91f8c13f372302050029cdb5e67dfeb6514f996603ce0b3d9",
+// block_hash: "0x9d4e214cd06998f91f8c13f372302050029cdb5e67dfeb6514f996603ce0b3d9",
 // block_timestamp: 1695041507,
 // block_datetime: "2023-09-18T12:51:47.000Z",
 // transaction_hash: "0x02fd6cd9df507b917e644bc8d23082f7548fdca683c91f058abd5a6fe896facb",
@@ -111,7 +111,7 @@ export const ContentTypeSchema = z
 export const EthscriptionBaseSchema = z
   .object({
     block_number: NumberLikeSchema,
-    block_blockhash: HashWithPrefixSchema,
+    block_hash: HashWithPrefixSchema,
     block_timestamp: NumberLikeSchema,
     block_datetime: z.iso.datetime(),
 
@@ -146,6 +146,8 @@ export const EthscriptionBaseSchema = z
     is_esip4: z.boolean(),
     is_esip6: z.boolean(),
     is_esip8: z.boolean(),
+
+    ethscription_number: NumberLikeSchema.optional(),
   })
   .loose();
 export type Ethscription = z.infer<typeof EthscriptionBaseSchema>;
@@ -158,7 +160,7 @@ export const EthscriptionTransferSchema = z
     to_address: EthereumAddressSchema,
     block_number: NumberLikeSchema,
     block_timestamp: NumberLikeSchema,
-    block_blockhash: HashWithPrefixSchema,
+    block_hash: HashWithPrefixSchema,
     event_log_index: NumberLikeSchema.nullable(),
     transaction_index: NumberLikeSchema.or(z.number().gte(0)),
     enforced_previous_owner: EthereumAddressSchema.nullable(),
@@ -223,7 +225,7 @@ export const OwnersResultSchema = z.object({
 export const NumbersResultSchema = z.object({
   block_timestamp: NumberLikeSchema,
   block_datetime: z.iso.datetime(),
-  block_blockhash: HashWithPrefixSchema,
+  block_hash: HashWithPrefixSchema,
   block_number: NumberLikeSchema,
   block_number_fmt: z.string(),
   transaction_index: NumberLikeSchema,

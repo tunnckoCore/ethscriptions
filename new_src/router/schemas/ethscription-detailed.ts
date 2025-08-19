@@ -2,6 +2,7 @@
 
 import { z } from 'zod';
 import {
+  BaseQuerySchema,
   EnumAllDetailedSchema,
   EthscriptionBaseSchema,
   EthscriptionTransferSchema,
@@ -11,15 +12,17 @@ import {
 } from '../schemas/index.ts';
 
 // Input schema for getEthscriptionDetailed procedure
-export const GetEthscriptionDetailedInputSchema = z.object({
+export const GetEthscriptionDetailedInputSchema = BaseQuerySchema.extend({
   id: IdSchema,
   mode: EnumAllDetailedSchema,
 });
 
 // Output schema - union of all possible return types based on type parameter
 export const GetEthscriptionDetailedOutputSchema = z.union([
-  // meta, metadata -> EthscriptionBase
-  EthscriptionBaseSchema,
+  // meta, metadata -> EthscriptionBase;
+  // It already has .loose(), but we add .partial too,
+  // because the `with/only` filters could mess with output schema validation
+  EthscriptionBaseSchema.partial(),
 
   // data, content, attach, attachment, blob -> Uint8Array
   z.instanceof(Uint8Array),

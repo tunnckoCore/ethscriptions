@@ -40,7 +40,6 @@ export const GetAllEthscritionsInputSchema = BaseQuerySchema.extend({
   // Block filters
   block_number: NumberLikeSchema,
   block_hash: HashWithPrefixSchema,
-  block_blockhash: HashWithPrefixSchema,
   min_block_number: NumberLikeSchema,
   max_block_number: NumberLikeSchema,
   after_block: NumberLikeSchema,
@@ -52,10 +51,15 @@ export const GetAllEthscritionsInputSchema = BaseQuerySchema.extend({
 
   // Content hash filter
   content_sha: HashSchema,
-}).partial();
+})
+  .loose()
+  .partial();
 
 // Output schema - array of EthscriptionBase
-export const GetAllEthscritionsOutputSchema = z.array(EthscriptionBaseSchema);
+// Using .partial() the `with` and `only` filters could mess with output validation
+export const GetAllEthscritionsOutputSchema = z.array(
+  EthscriptionBaseSchema.partial()
+);
 
 // Types for convenience
 export type GetAllEthscritionsInput = z.infer<

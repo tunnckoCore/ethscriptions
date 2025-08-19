@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MPL-2.0
 
-import { ORPCError, os } from '@orpc/server';
-// Import original function for expand functionality until getEthscriptionDetailed is converted
-import { getEthscriptionDetailed } from '../../../src/index.ts';
+import { ORPCError, os, safe } from '@orpc/server';
+
 import {
   MultiCheckExistsInputSchema,
   MultiCheckExistsOutputSchema,
 } from '../schemas/check-exists.ts';
+import { getEthscriptionDetailedProcedure } from './ethscription-detailed.ts';
 
 export const multiCheckExistsProcedure = os
   .input(MultiCheckExistsInputSchema)
@@ -72,14 +72,20 @@ export const multiCheckExistsProcedure = os
             return [sha, null];
           }
 
-          // TODO: Replace with call() helper once getEthscriptionDetailed is converted
-          const { ok, result } = (await getEthscriptionDetailed(
-            id as string,
-            'meta',
-            input
-          )) as any;
+          const detailedResult = await safe(
+            getEthscriptionDetailedProcedure.callable()({
+              ...input,
+              id: id as string,
+              mode: 'meta',
+            })
+          );
 
-          return [sha, ok ? result : id];
+          if (detailedResult.error) {
+            // console.log('check-exists error on detailed', detailedResult.error);
+            return [sha, id];
+          }
+
+          return [sha, detailedResult.data];
         })
       );
 

@@ -317,8 +317,8 @@ async function getEthscriptionDetailed<T extends EnumAllDetailed>(id: string, ty
 - `new_src/router/procedures/ethscription-detailed.ts`
 - `new_src/router/index.ts` (add to router)
 
-#### Task 2.11: Convert `estimateDataCost()` ⏳
-**Status**: Not Started
+#### Task 2.11: Convert `estimateDataCost()` ✅
+**Status**: Completed
 **Priority**: Medium
 **Estimated Time**: 1.5 hours
 
@@ -328,13 +328,13 @@ async function estimateDataCost(input: `data:${string}` | `0x${string}` | Uint8A
 ```
 
 **Acceptance Criteria**:
-- [ ] Create Zod schema for complex input union type
-- [ ] Create Zod schema for BaseCostOpts parameter
-- [ ] Create Zod schema for EstimateCostResult output
-- [ ] Convert function to oRPC procedure
-- [ ] Handle Uint8Array serialization/deserialization
-- [ ] Add procedure to router
-- [ ] Update progress in this file
+- [x] Create Zod schema for complex input union type
+- [x] Create Zod schema for BaseCostOpts parameter
+- [x] Create Zod schema for EstimateCostResult output
+- [x] Convert function to oRPC procedure
+- [x] Handle Uint8Array serialization/deserialization
+- [x] Add procedure to router
+- [x] Update progress in this file
 
 **Files to Create/Modify**:
 - `new_src/router/schemas/estimate-cost.ts`
@@ -384,7 +384,7 @@ async function estimateDataCost(input: `data:${string}` | `0x${string}` | Uint8A
 
 ## Progress Tracking
 
-### Completed Tasks: 11/15 (73.3%)
+### Completed Tasks: 12/15 (80.0%)
 - Task 1.1: Setup Basic oRPC Infrastructure ✅
 - Task 2.1: Convert `getPrices()` ✅
 - Task 2.2: Convert `multiCheckExists()` ✅
@@ -396,10 +396,11 @@ async function estimateDataCost(input: `data:${string}` | `0x${string}` | Uint8A
 - Task 2.8: Convert `getAllEthscriptions()` ✅
 - Task 2.9: Convert `getEthscriptionById()` ✅
 - Task 2.10: Convert `getEthscriptionDetailed()` ✅
+- Task 2.11: Convert `estimateDataCost()` ✅
 
-### Current Task: Task 2.11 - Convert `estimateDataCost()`
+### All Procedure Conversions Complete! 🎉
 
-### Next Up: Task 3.1 - Setup Isomorphic Client
+All 11 functions have been successfully converted to oRPC procedures with type-safe validation and error handling.
 
 ---
 

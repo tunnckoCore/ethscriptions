@@ -199,7 +199,7 @@ export function normalizeResult(result: any, options?: any): EthscriptionBase {
 
   const res = {
     block_number: Number(result.block_number),
-    block_blockhash: result.block_blockhash,
+    block_hash: result.block_blockhash,
     block_timestamp: Number(result.block_timestamp),
     block_datetime: new Date(
       Number(result.block_timestamp) * 1000
@@ -255,7 +255,6 @@ export function normalizeResult(result: any, options?: any): EthscriptionBase {
     return acc;
   }, onlyRes);
 
-  // console.log('withRes:', withRes);
   return withRes.length > 0 ? (withRes as typeof withRes) : (onlyRes as any);
 }
 

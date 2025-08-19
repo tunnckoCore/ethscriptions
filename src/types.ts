@@ -14,7 +14,7 @@ export type EnumMediaType = (typeof MEDIA_TYPES)[number];
 
 export type EthscriptionBase = {
   block_number: `${number}`;
-  block_blockhash: `0x${string}`;
+  block_hash: `0x${string}`;
   block_timestamp: `${number}`;
   block_datetime: string;
   event_log_index: `${number}` | null;
@@ -47,7 +47,7 @@ export type EthscriptionTransfer = {
   to_address: `0x${string}`;
   block_number: `${number}`;
   block_timestamp: `${number}`;
-  block_blockhash: `0x${string}`;
+  block_hash: `0x${string}`;
   event_log_index: `${number}` | null;
   transaction_index: `${number}`;
   enforced_previous_owner: any | `0x${string}`;

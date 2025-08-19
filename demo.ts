@@ -1,7 +1,8 @@
 // import { createSafeClient } from '@orpc/client';
 // import { call, createRouterClient, os } from '@orpc/server';
 // import z from 'zod';
-import { client, unsafeClient } from './new_src/index.ts';
+import { sdk } from './new_src/index.ts';
+import { bytesToHex } from './src/utils.ts';
 
 // DO NOT REMOVE
 // const [error, data] = await client.getDigestForData({
@@ -17,8 +18,11 @@ import { client, unsafeClient } from './new_src/index.ts';
 //   user: 'wgw',
 //   page_size: 5,
 // });
-const [error, data] = await client.estimateDataCost({
-  input: 'data:,wgw.lol',
+const [error, data] = await sdk.multiCheckExists({
+  shas: '0x2817fd9cf901e4435253881550731a5edc5e519c19de46b08e2b19a18e95143e',
+  expand: true,
+  with: 'ethscription_number',
+  only: 'ethscription_number,transaction_index,block_hash,transaction_hash',
 });
 
 if (error) {

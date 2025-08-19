@@ -671,13 +671,13 @@ export async function estimateDataCost(
   const opts = { ...prices.result, ...cfg } as PricesResult & BaseCostOpts;
 
   const isUint8 = input instanceof Uint8Array;
-  const isRawData = isUint8 ? false : input?.startsWith('data:');
+  const isDataUri = isUint8 ? false : input?.startsWith('data:');
   const isHexData = isUint8
     ? false
     : isHexValue(input?.replace(/^0x/, '')) &&
       input?.replace(/^0x/, '')?.startsWith('646174613a');
 
-  const isValid = [isUint8, isRawData, isHexData].includes(true);
+  const isValid = [isUint8, isDataUri, isHexData].includes(true);
 
   if (!isValid) {
     return {
@@ -691,7 +691,7 @@ export async function estimateDataCost(
   }
 
   try {
-    const data = isRawData
+    const data = isDataUri
       ? new TextEncoder().encode(input as string)
       : isHexData
         ? hexToBytes((input as string).replace(/^0x/, ''))
@@ -708,6 +708,8 @@ export async function estimateDataCost(
 
     const eth = costWei / 1e18;
     const usd = eth * Number(opts.eth_price);
+
+    opts.block_number = Number(opts.block_number);
 
     return {
       ok: true,
