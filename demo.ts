@@ -18,19 +18,27 @@ import { sdk, unsafeSDK } from './orpc/index.ts';
 //   page_size: 5,
 // });
 try {
-  const res = await unsafeSDK.getDigestForData({
-    // baseURL: 'https://sepolia-api-v2.ethscriptions.com',
-    input: 'data:,wgw',
-    checkExists: true,
-    includeInput: false,
-    expand: true,
-    with: 'current_owner',
-    // input: bytesToHex(new TextEncoder().encode('data:,wgw.lol')),
+  // const res = await unsafeSDK.getDigestForData({
+  //   // baseURL: 'https://sepolia-api-v2.ethscriptions.com',
+  //   input: 'data:,wgw',
+  //   checkExists: true,
+  //   includeInput: false,
+  //   expand: true,
+  //   with: 'current_owner',
+  //   // input: bytesToHex(new TextEncoder().encode('data:,wgw.lol')),
+  // });
+
+  // const canInscribe = Boolean(res.exists?.[res.sha] === null);
+
+  const res = await unsafeSDK.getAllEthscriptions({
+    attachment_present: true,
+    // reverse: true,
+    creator: 'wgw.eth',
+    resolve: true,
+    with: 'ethscription_number',
   });
-
-  const canInscribe = Boolean(res.exists?.[res.sha] === null);
-
-  console.log('RESULT>>>', { canInscribe }, res);
+  // console.log('RESULT>>>', { canInscribe }, res);
+  console.log('RESULT>>>', res);
 } catch (e: any) {
   console.error('ERROR>>>', getError(e), getError(e.cause));
 }

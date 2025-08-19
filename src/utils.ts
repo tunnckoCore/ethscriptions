@@ -25,7 +25,7 @@ export async function upstreamFetcher<
     resolve: false,
     baseURL: BASE_API_URL,
     ...filtersNormalizer({ ...options }),
-  };
+  } as any;
 
   if (opts.resolve) {
     let res: typeof opts;
@@ -47,17 +47,15 @@ export async function upstreamFetcher<
     }
 
     opts = { ...opts, ...res };
+  } else {
+    logHints(opts);
   }
 
   const { baseURL = BASE_API_URL } = opts;
 
-  // @ts-expect-error - we don't want to pass these to upstream API
   delete opts.resolve;
-  // @ts-expect-error - we don't want to pass these to upstream API
   delete opts.baseURL;
-  // @ts-expect-error - we don't want to pass these to upstream API
   delete opts.expand;
-  // @ts-expect-error - we don't want to pass these to upstream API
   delete opts.with;
 
   const searchStr = qs.stringify(opts, { encode: false, indices: false });
@@ -152,6 +150,38 @@ export async function upstreamFetcher<
   }
 
   return res;
+}
+
+function logHints(opts: any = {}) {
+  if (
+    opts.creator &&
+    !opts.creator.startsWith('0x') &&
+    opts.creator.length > 2
+  ) {
+    console.info(
+      'Creator is not an address, maybe you want to use `resolve: true`'
+    );
+  } else if (
+    (opts.owner && !opts.owner.startsWith('0x') && opts.owner.length > 2) ||
+    (opts.current_owner &&
+      !opts.current_owner.startsWith('0x') &&
+      opts.current_owner.length > 2)
+  ) {
+    console.info(
+      'Current owner is not an address, maybe you want to use `resolve: true`'
+    );
+  } else if (
+    (opts.initial &&
+      !opts.initial.startsWith('0x') &&
+      opts.initial.length > 2) ||
+    (opts.initial_owner &&
+      !opts.initial_owner.startsWith('0x') &&
+      opts.initial_owner.length > 2)
+  ) {
+    console.info(
+      'Initial owner is not an address, maybe you want to use `resolve: true`'
+    );
+  }
 }
 
 export function normalizeAndSortTransfers(

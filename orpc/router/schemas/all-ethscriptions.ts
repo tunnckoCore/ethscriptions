@@ -3,6 +3,7 @@
 import { z } from 'zod';
 import {
   BaseQuerySchema,
+  BooleanSchema,
   ContentTypeSchema,
   EthereumAddressSchema,
   EthscriptionBaseSchema,
@@ -14,6 +15,9 @@ import {
 
 // Input schema for getAllEthscriptions procedure with comprehensive filtering
 export const GetAllEthscritionsInputSchema = BaseQuerySchema.extend({
+  attachment_present: BooleanSchema,
+  reverse: BooleanSchema,
+
   // Pagination
   per_page: NumberLikeSchema,
   max_results: NumberLikeSchema,
