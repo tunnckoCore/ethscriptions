@@ -1,30 +1,35 @@
 // SPDX-License-Identifier: MPL-2.0
 
-import { ORPCError, os } from '@orpc/server';
-// Import original utilities until they are converted
-import { getAllEthscriptions } from '../../../src/index.ts';
+import { os, safe } from '@orpc/server';
+import z from 'zod';
 import { isEthereumAddress } from '../../../src/utils.ts';
 import {
-  GetUserCreatedEthscritionsInputSchema,
-  GetUserCreatedEthscritionsOutputSchema,
-} from '../schemas/user-created.ts';
+  GetAllEthscritionsInputSchema,
+  type GetAllEthscritionsOutput,
+  GetAllEthscritionsOutputSchema,
+} from '../schemas/all-ethscriptions.ts';
+import { EthereumAddressSchema } from '../schemas/index.ts';
+import { getAllEthscriptionsProcedure } from './all-ethscriptions.ts';
 
 export const getUserCreatedEthscriptionsProcedure = os
-  .input(GetUserCreatedEthscritionsInputSchema)
-  .output(GetUserCreatedEthscritionsOutputSchema)
+  .input(
+    GetAllEthscritionsInputSchema.extend({
+      user: EthereumAddressSchema.or(z.string().min(1)),
+    })
+  )
+  .output(GetAllEthscritionsOutputSchema)
   .handler(async ({ input }) => {
-    const result = await getAllEthscriptions({
-      ...input,
-      resolve: !isEthereumAddress(input.user),
-      creator: input.user,
-    });
+    const getAllResult = await safe(
+      getAllEthscriptionsProcedure.callable()({
+        ...input,
+        resolve: !isEthereumAddress(input.user),
+        creator: input.user,
+      })
+    );
 
-    if (!result.ok) {
-      throw new ORPCError('INTERNAL_SERVER_ERROR', {
-        message:
-          result.error?.message || 'Failed to fetch user created ethscriptions',
-        status: result.error?.httpStatus || 500,
-      });
+    if (getAllResult.error) {
+      throw getAllResult.error;
     }
-    return result.result;
+
+    return getAllResult.data as GetAllEthscritionsOutput;
   });

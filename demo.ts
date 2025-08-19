@@ -2,6 +2,7 @@
 // import { call, createRouterClient, os } from '@orpc/server';
 // import z from 'zod';
 import { sdk, unsafeSDK } from './new_src/index.ts';
+import type { GetAllEthscritionsInput } from './new_src/router/schemas/all-ethscriptions.ts';
 
 // DO NOT REMOVE
 // const [error, data] = await client.getDigestForData({
@@ -18,17 +19,21 @@ import { sdk, unsafeSDK } from './new_src/index.ts';
 //   page_size: 5,
 // });
 try {
-  const res = await unsafeSDK.getAllEthscriptions({
-    baseURL: 'https://sepolia-api-v2.ethscriptions.com',
-    creator: 'wgw',
-    resolve: true,
-    page_size: 5,
-    with: 'ethscription_number',
-    // input: bytesToHex(new TextEncoder().encode('data:,wgw.lol')),
-  });
+  const res =
+    await unsafeSDK.getUserOwnedEthscriptions<GetAllEthscritionsInput>({
+      baseURL: 'https://sepolia-api-v2.ethscriptions.com',
+      user: 'wgw',
+      resolve: true,
+      page_key:
+        '0x4b4650078d2f2a8fdc1fda9410dfd17f8630e322341fed8c477023f6a6e25cd2',
+      // page_size: 50,
+      // media_type: 'font',
+      with: 'ethscription_number',
+      // input: bytesToHex(new TextEncoder().encode('data:,wgw.lol')),
+    });
 
   console.log('RESULT>>>', res);
-} catch (e) {
+} catch (e: any) {
   console.error(e.cause.issues);
 }
 // if (error) {

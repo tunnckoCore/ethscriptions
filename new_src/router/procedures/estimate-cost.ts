@@ -16,10 +16,7 @@ export const estimateDataCostProcedure = os
     const pricesResult = await safe(pricesProcedure.callable()(input.speed));
 
     if (pricesResult.error) {
-      throw new ORPCError('INTERNAL_SERVER_ERROR', {
-        message: 'Failed to fetch gas prices for cost estimation',
-        status: 500,
-      });
+      throw pricesResult.error;
     }
 
     const prices = pricesResult.data;
