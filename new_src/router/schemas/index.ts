@@ -160,7 +160,7 @@ export const EthscriptionTransferSchema = z
     block_timestamp: NumberLikeSchema,
     block_blockhash: HashWithPrefixSchema,
     event_log_index: NumberLikeSchema.nullable(),
-    transaction_index: NumberLikeSchema,
+    transaction_index: NumberLikeSchema.or(z.number().gte(0)),
     enforced_previous_owner: EthereumAddressSchema.nullable(),
     is_esip0: z.boolean(),
     is_esip1: z.boolean(),

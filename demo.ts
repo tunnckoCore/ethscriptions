@@ -2,7 +2,6 @@
 // import { call, createRouterClient, os } from '@orpc/server';
 // import z from 'zod';
 import { client, unsafeClient } from './new_src/index.ts';
-import { GetEthscriptionByIdOutputSchema } from './new_src/router/schemas/ethscription-by-id.ts';
 
 // DO NOT REMOVE
 // const [error, data] = await client.getDigestForData({
@@ -18,9 +17,9 @@ import { GetEthscriptionByIdOutputSchema } from './new_src/router/schemas/ethscr
 //   user: 'wgw',
 //   page_size: 5,
 // });
-const [error, data] = await client.getEthscriptionById({
-  id: '1,000,000',
-  with: 'ethscription_number',
+const [error, data] = await client.getEthscriptionDetailed({
+  id: '0xbb4701d2cef18027fd83bfe9e0fed5ac43d38f398560e4d284b6d1db1f1165c7',
+  mode: 'number',
 });
 
 if (error) {

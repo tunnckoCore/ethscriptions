@@ -5,6 +5,7 @@ import { getAllEthscriptionsProcedure } from './procedures/all-ethscriptions.ts'
 import { multiCheckExistsProcedure } from './procedures/check-exists.ts';
 import { getDigestForDataProcedure } from './procedures/digest.ts';
 import { getEthscriptionByIdProcedure } from './procedures/ethscription-by-id.ts';
+import { getEthscriptionDetailedProcedure } from './procedures/ethscription-detailed.ts';
 import { pricesProcedure } from './procedures/prices.ts';
 import { resolveUserProcedure } from './procedures/resolve-user.ts';
 import { getUserCreatedEthscriptionsProcedure } from './procedures/user-created.ts';
@@ -22,8 +23,8 @@ export const router = {
   getUserOwnedEthscriptions: getUserOwnedEthscriptionsProcedure,
   getAllEthscriptions: getAllEthscriptionsProcedure,
   getEthscriptionById: getEthscriptionByIdProcedure,
+  getEthscriptionDetailed: getEthscriptionDetailedProcedure,
   // Procedures will be added here incrementally
-  // getEthscriptionDetailed: getEthscriptionDetailedProcedure,
   // estimateDataCost: estimateDataCostProcedure,
 };
 

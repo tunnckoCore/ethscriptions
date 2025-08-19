@@ -160,12 +160,19 @@ export function normalizeAndSortTransfers(
 
       .map(({ ethscription_transaction_hash, ...x }, idx) => ({
         ...x,
+
         is_esip0: idx === 0,
         // theoretically, it could be ESIP-1 Transfer too, but ESIP-2 is more used and more likely
         is_esip1: Boolean(x.event_log_index !== null),
         is_esip2: Boolean(x.event_log_index !== null),
       }))
-      // sort by block number, newest fist
+      // sort by block number, ascending
+      .sort((a, b) => a.block_number - b.block_number)
+      .map((x, idx) => ({
+        ...x,
+        transfer_index: idx,
+      }))
+      // sort by block number, descending after setting the transfer index
       .sort((a, b) => b.block_number - a.block_number)
   );
 }
@@ -537,7 +544,7 @@ export function numberFormat(x: string, delim = ','): string {
     return '';
   }
 
-  const str = x.split('').reverse().join('');
+  const str = String(x).split('').reverse().join('');
   const mm = str.match(/.{1,3}/g);
 
   if (!mm) {

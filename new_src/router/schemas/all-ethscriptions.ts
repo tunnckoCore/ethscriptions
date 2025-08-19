@@ -40,6 +40,7 @@ export const GetAllEthscritionsInputSchema = BaseQuerySchema.extend({
   // Block filters
   block_number: NumberLikeSchema,
   block_hash: HashWithPrefixSchema,
+  block_blockhash: HashWithPrefixSchema,
   min_block_number: NumberLikeSchema,
   max_block_number: NumberLikeSchema,
   after_block: NumberLikeSchema,

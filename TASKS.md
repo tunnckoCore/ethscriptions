@@ -292,8 +292,8 @@ async function getEthscriptionById(id: string, options?: any): Promise<Result<Et
 - `new_src/router/procedures/ethscription-by-id.ts`
 - `new_src/router/index.ts` (add to router)
 
-#### Task 2.10: Convert `getEthscriptionDetailed()` ⏳
-**Status**: Not Started
+#### Task 2.10: Convert `getEthscriptionDetailed()` ✅
+**Status**: Completed
 **Priority**: High
 **Estimated Time**: 3 hours
 
@@ -303,14 +303,14 @@ async function getEthscriptionDetailed<T extends EnumAllDetailed>(id: string, ty
 ```
 
 **Acceptance Criteria**:
-- [ ] Create Zod schema for id input
-- [ ] Create Zod schema for type parameter (EnumAllDetailed)
-- [ ] Create Zod schemas for all possible return types (ResultDetailed<T>)
-- [ ] Convert function to oRPC procedure with generic handling
-- [ ] Handle complex conditional return types
-- [ ] Handle Uint8Array serialization for content/attachment
-- [ ] Add procedure to router
-- [ ] Update progress in this file
+- [x] Create Zod schema for id input
+- [x] Create Zod schema for type parameter (EnumAllDetailed)
+- [x] Create Zod schemas for all possible return types (ResultDetailed<T>)
+- [x] Convert function to oRPC procedure with generic handling
+- [x] Handle complex conditional return types
+- [x] Handle Uint8Array serialization for content/attachment
+- [x] Add procedure to router
+- [x] Update progress in this file
 
 **Files to Create/Modify**:
 - `new_src/router/schemas/ethscription-detailed.ts`
@@ -384,7 +384,7 @@ async function estimateDataCost(input: `data:${string}` | `0x${string}` | Uint8A
 
 ## Progress Tracking
 
-### Completed Tasks: 10/15 (66.7%)
+### Completed Tasks: 11/15 (73.3%)
 - Task 1.1: Setup Basic oRPC Infrastructure ✅
 - Task 2.1: Convert `getPrices()` ✅
 - Task 2.2: Convert `multiCheckExists()` ✅
@@ -395,10 +395,11 @@ async function estimateDataCost(input: `data:${string}` | `0x${string}` | Uint8A
 - Task 2.7: Convert `getUserOwnedEthscriptions()` ✅
 - Task 2.8: Convert `getAllEthscriptions()` ✅
 - Task 2.9: Convert `getEthscriptionById()` ✅
+- Task 2.10: Convert `getEthscriptionDetailed()` ✅
 
-### Current Task: Task 2.10 - Convert `getEthscriptionDetailed()`
+### Current Task: Task 2.11 - Convert `estimateDataCost()`
 
-### Next Up: Task 2.11 - Convert `estimateDataCost()`
+### Next Up: Task 3.1 - Setup Isomorphic Client
 
 ---
 
