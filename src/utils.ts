@@ -176,10 +176,13 @@ function logHints(opts: any = {}) {
       opts.initial.length > 2) ||
     (opts.initial_owner &&
       !opts.initial_owner.startsWith('0x') &&
-      opts.initial_owner.length > 2)
+      opts.initial_owner.length > 2) ||
+    (opts.receiver &&
+      !opts.receiver.startsWith('0x') &&
+      opts.receiver.length > 2)
   ) {
     console.info(
-      'Initial owner is not an address, maybe you want to use `resolve: true`'
+      'Initial owner (receiver) is not an address, maybe you want to use `resolve: true`'
     );
   }
 }
