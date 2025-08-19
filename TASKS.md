@@ -268,8 +268,8 @@ async function getAllEthscriptions(options: any): Promise<Result<EthscriptionBas
 - `new_src/router/procedures/all-ethscriptions.ts`
 - `new_src/router/index.ts` (add to router)
 
-#### Task 2.9: Convert `getEthscriptionById()` ⏳
-**Status**: Not Started
+#### Task 2.9: Convert `getEthscriptionById()` ✅
+**Status**: Completed
 **Priority**: Medium
 **Estimated Time**: 1 hour
 
@@ -279,13 +279,13 @@ async function getEthscriptionById(id: string, options?: any): Promise<Result<Et
 ```
 
 **Acceptance Criteria**:
-- [ ] Create Zod schema for id input
-- [ ] Create Zod schema for options parameter
-- [ ] Create Zod schema for EthscriptionBase output
-- [ ] Convert function to oRPC procedure
-- [ ] Delegate to `getEthscriptionDetailed` with 'meta' type (use the `call` helper of orpc to call a procedure, from `import { call } from '@orpc/server'`)
-- [ ] Add procedure to router
-- [ ] Update progress in this file
+- [x] Create Zod schema for id input
+- [x] Create Zod schema for options parameter
+- [x] Create Zod schema for EthscriptionBase output
+- [x] Convert function to oRPC procedure
+- [x] Delegate to `getEthscriptionDetailed` with 'meta' type (use the `call` helper of orpc to call a procedure, from `import { call } from '@orpc/server'`)
+- [x] Add procedure to router
+- [x] Update progress in this file
 
 **Files to Create/Modify**:
 - `new_src/router/schemas/ethscription-by-id.ts`
@@ -384,7 +384,7 @@ async function estimateDataCost(input: `data:${string}` | `0x${string}` | Uint8A
 
 ## Progress Tracking
 
-### Completed Tasks: 9/15 (60.0%)
+### Completed Tasks: 10/15 (66.7%)
 - Task 1.1: Setup Basic oRPC Infrastructure ✅
 - Task 2.1: Convert `getPrices()` ✅
 - Task 2.2: Convert `multiCheckExists()` ✅
@@ -394,10 +394,11 @@ async function estimateDataCost(input: `data:${string}` | `0x${string}` | Uint8A
 - Task 2.6: Convert `getUserCreatedEthscritions()` ✅
 - Task 2.7: Convert `getUserOwnedEthscriptions()` ✅
 - Task 2.8: Convert `getAllEthscriptions()` ✅
+- Task 2.9: Convert `getEthscriptionById()` ✅
 
-### Current Task: Task 2.9 - Convert `getEthscriptionById()`
+### Current Task: Task 2.10 - Convert `getEthscriptionDetailed()`
 
-### Next Up: Task 2.10 - Convert `getEthscriptionDetailed()`
+### Next Up: Task 2.11 - Convert `estimateDataCost()`
 
 ---
 

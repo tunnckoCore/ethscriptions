@@ -4,6 +4,7 @@ import type { RouterClient } from '@orpc/server';
 import { getAllEthscriptionsProcedure } from './procedures/all-ethscriptions.ts';
 import { multiCheckExistsProcedure } from './procedures/check-exists.ts';
 import { getDigestForDataProcedure } from './procedures/digest.ts';
+import { getEthscriptionByIdProcedure } from './procedures/ethscription-by-id.ts';
 import { pricesProcedure } from './procedures/prices.ts';
 import { resolveUserProcedure } from './procedures/resolve-user.ts';
 import { getUserCreatedEthscriptionsProcedure } from './procedures/user-created.ts';
@@ -20,8 +21,8 @@ export const router = {
   getUserCreatedEthscriptions: getUserCreatedEthscriptionsProcedure,
   getUserOwnedEthscriptions: getUserOwnedEthscriptionsProcedure,
   getAllEthscriptions: getAllEthscriptionsProcedure,
+  getEthscriptionById: getEthscriptionByIdProcedure,
   // Procedures will be added here incrementally
-  // getEthscriptionById: getEthscriptionByIdProcedure,
   // getEthscriptionDetailed: getEthscriptionDetailedProcedure,
   // estimateDataCost: estimateDataCostProcedure,
 };
