@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 
 import { ORPCError, os, safe } from '@orpc/server';
-// Import only utilities, not main functions
 import { hexToBytes, isHexValue } from '../../../src/utils.ts';
 import {
   EstimateDataCostInputSchema,

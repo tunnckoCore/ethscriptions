@@ -17,9 +17,8 @@ import { sdk } from './new_src/index.ts';
 //   user: 'wgw',
 //   page_size: 5,
 // });
-const [error, data] = await sdk.estimateDataCost({
-  // input: 'data:,wgw.lol',
-  input: new TextEncoder().encode('data:,wgw.lol'),
+const [error, data] = await sdk.getAllEthscriptions({
+  with: 'ethscription_number',
   // input: bytesToHex(new TextEncoder().encode('data:,wgw.lol')),
 });
 
