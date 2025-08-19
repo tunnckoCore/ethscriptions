@@ -34,6 +34,10 @@ export const NumberSchema = z
   .pipe(PositiveNumberSchema);
 
 export const NumberLikeSchema = PositiveNumberSchema.or(NumberSchema);
+export const BigIntLikeSchema = z
+  .string()
+  .transform(BigInt)
+  .pipe(z.bigint().gte(0n));
 
 export const HexStringSchema = z.custom<string | `0x${string}`>(
   (x) =>
@@ -113,11 +117,15 @@ export const EthscriptionBaseSchema = z
 
     transaction_hash: HashWithPrefixSchema,
     transaction_index: NumberLikeSchema,
-    transaction_value: NumberLikeSchema,
-    transaction_fee: NumberLikeSchema,
 
-    gas_price: NumberLikeSchema,
-    gas_used: NumberLikeSchema,
+    transaction_value: NumberLikeSchema.or(BigIntLikeSchema).or(
+      z.bigint().gte(0n)
+    ),
+    transaction_fee: NumberLikeSchema.or(BigIntLikeSchema).or(
+      z.bigint().gte(0n)
+    ),
+    gas_price: NumberLikeSchema.or(BigIntLikeSchema).or(z.bigint().gte(0n)),
+    gas_used: NumberLikeSchema.or(BigIntLikeSchema).or(z.bigint().gte(0n)),
 
     creator: EthereumAddressSchema,
     receiver: EthereumAddressSchema,

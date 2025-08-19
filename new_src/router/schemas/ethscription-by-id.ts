@@ -13,7 +13,7 @@ export const GetEthscriptionByIdInputSchema = BaseQuerySchema.extend({
 });
 
 // Output schema - single EthscriptionBase
-export const GetEthscriptionByIdOutputSchema = EthscriptionBaseSchema;
+export const GetEthscriptionByIdOutputSchema = EthscriptionBaseSchema.loose();
 
 // Types for convenience
 export type GetEthscriptionByIdInput = z.infer<

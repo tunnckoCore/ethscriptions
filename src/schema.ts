@@ -17,7 +17,7 @@ export const BooleanSchema = z.stringbool().or(z.boolean());
 export const NumberSchema = z
   .string()
   .transform(Number)
-  .pipe(z.number().int().gte(0));
+  .pipe(z.number().gte(0));
 
 // Helper for address-like strings (0x... or ENS)
 export const AddressSchema = z.string().regex(/^(0x[\dA-Fa-f]{40}|.*\.eth)$/);
