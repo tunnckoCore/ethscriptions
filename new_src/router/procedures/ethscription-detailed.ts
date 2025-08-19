@@ -97,13 +97,11 @@ export const getEthscriptionDetailedProcedure = os
     }
 
     if (/transfer/i.test(mode)) {
-      const bruh = normalizeAndSortTransfers(
+      const resp = normalizeAndSortTransfers(
         data.result.ethscription_transfers
       ) as unknown as GetEthscriptionDetailedOutput;
 
-      console.error('on transfers>>>>', bruh);
-
-      return bruh;
+      return resp;
     }
 
     if (/attach|attachment|blob/i.test(mode)) {
