@@ -1,7 +1,7 @@
 // import { createSafeClient } from '@orpc/client';
 // import { call, createRouterClient, os } from '@orpc/server';
 // import z from 'zod';
-import { sdk } from './new_src/index.ts';
+import { sdk, unsafeSDK } from './new_src/index.ts';
 
 // DO NOT REMOVE
 // const [error, data] = await client.getDigestForData({
@@ -17,28 +17,37 @@ import { sdk } from './new_src/index.ts';
 //   user: 'wgw',
 //   page_size: 5,
 // });
-const [error, data] = await sdk.getAllEthscriptions({
-  with: 'ethscription_number',
-  // input: bytesToHex(new TextEncoder().encode('data:,wgw.lol')),
-});
+try {
+  const res = await unsafeSDK.getAllEthscriptions({
+    baseURL: 'https://sepolia-api-v2.ethscriptions.com',
+    creator: 'wgw',
+    resolve: true,
+    page_size: 5,
+    with: 'ethscription_number',
+    // input: bytesToHex(new TextEncoder().encode('data:,wgw.lol')),
+  });
 
-if (error) {
-  console.error(
-    'ERRRRR:',
-    error,
-    JSON.stringify(getError(error), null, 2)
-    // (result?.error as any)?.data?.issues?.[0]?.errors
-  );
-} else {
-  console.log('RESULT:', data);
+  console.log('RESULT>>>', res);
+} catch (e) {
+  console.error(e.cause.issues);
 }
+// if (error) {
+//   console.error(
+//     'ERRRRR:',
+//     error.cause,
+//     JSON.stringify(getError(error), null, 2)
+//     // (result?.error as any)?.data?.issues?.[0]?.errors
+//   );
+// } else {
+//   console.log('RESULT:', data);
+// }
 
-function getError(e: any) {
-  return (
-    e?.cause?.issues?.[0]?.errors ||
-    (e as any)?.issues ||
-    (e as any)?.data?.issues?.[0]?.errors ||
-    (e as any)?.data?.issues?.[0] ||
-    (e as any)?.data
-  );
-}
+// function getError(e: any) {
+//   return (
+//     e?.cause?.issues?.[0]?.errors ||
+//     (e as any)?.issues ||
+//     (e as any)?.data?.issues?.[0]?.errors ||
+//     (e as any)?.data?.issues?.[0] ||
+//     (e as any)?.data
+//   );
+// }

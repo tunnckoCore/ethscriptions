@@ -57,6 +57,8 @@ export async function upstreamFetcher<
   delete opts.baseURL;
   // @ts-expect-error - we don't want to pass these to upstream API
   delete opts.expand;
+  // @ts-expect-error - we don't want to pass these to upstream API
+  delete opts.with;
 
   const searchStr = qs.stringify(opts, { encode: false, indices: false });
 

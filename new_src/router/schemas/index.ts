@@ -70,6 +70,7 @@ export const HashWithPrefixSchema = HexStringSchema.and(
 
 // Media type schemas
 export const MediaTypeSchema = z.enum([
+  'font',
   'image',
   'text',
   'video',
@@ -78,7 +79,7 @@ export const MediaTypeSchema = z.enum([
 ]);
 export const ContentTypeSchema = z
   .string()
-  .regex(/^(image|text|video|audio|application|message)\/.+$/, {
+  .regex(/^(font|image|text|video|audio|application|message)\/.+$/, {
     message: 'Invalid Content Type format, must be like "image/png"',
   });
 
