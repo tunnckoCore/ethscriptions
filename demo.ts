@@ -17,9 +17,8 @@ import { client, unsafeClient } from './new_src/index.ts';
 //   user: 'wgw',
 //   page_size: 5,
 // });
-const [error, data] = await client.getEthscriptionDetailed({
-  id: '0xbb4701d2cef18027fd83bfe9e0fed5ac43d38f398560e4d284b6d1db1f1165c7',
-  mode: 'number',
+const [error, data] = await client.estimateDataCost({
+  input: 'data:,wgw.lol',
 });
 
 if (error) {
