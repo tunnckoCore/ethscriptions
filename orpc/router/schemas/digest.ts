@@ -13,6 +13,7 @@ import {
 export const GetDigestForDataInputSchema = BaseQuerySchema.extend({
   input: DataInputSchema,
   checkExists: BooleanSchema.optional(),
+  includeInput: BooleanSchema.default(true),
 });
 
 // Output schema - union type based on checkExists flag

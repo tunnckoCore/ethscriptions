@@ -202,15 +202,15 @@ export const UserProfileResultSchema = z.object({
 
 export const DigestResultSchema = z
   .object({
-    sha: HashSchema.or(HashWithPrefixSchema),
+    sha: HashWithPrefixSchema,
     hex: HexStringSchema,
-    input: z.string(),
+    input: z.string().optional(),
   })
   .strict();
 
 export const CheckExistResultSchema = z.record(
   HexStringSchema,
-  z.union([HexStringSchema, EthscriptionBaseSchema.partial()])
+  z.union([HexStringSchema, EthscriptionBaseSchema.partial().nullable()])
 );
 
 export const OwnersResultSchema = z.object({

@@ -68,24 +68,26 @@ export const getDigestForDataProcedure = os
         );
 
         if (existsResult.error) {
-          throw new ORPCError('INTERNAL_SERVER_ERROR', {
-            message: 'Failed to check if digest exists',
-            status: 500,
-          });
+          return {
+            sha: `0x${sha}`,
+            hex: `0x${hexed}`,
+            ...(input.includeInput ? { input: inputData } : {}),
+            exists: { [`0x${sha}`]: null },
+          };
         }
 
         return {
-          sha,
+          sha: `0x${sha}`,
           hex: `0x${hexed}`,
-          input: inputData,
+          ...(input.includeInput ? { input: inputData } : {}),
           exists: existsResult.data,
         };
       }
 
       return {
-        sha,
+        sha: `0x${sha}`,
         hex: `0x${hexed}`,
-        input: inputData,
+        ...(input.includeInput ? { input: inputData } : {}),
       };
     } catch (err: any) {
       throw new ORPCError('INTERNAL_SERVER_ERROR', {

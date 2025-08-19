@@ -18,14 +18,19 @@ import { sdk, unsafeSDK } from './orpc/index.ts';
 //   page_size: 5,
 // });
 try {
-  const res = await unsafeSDK.getEthscriptionDetailed({
+  const res = await unsafeSDK.getDigestForData({
     // baseURL: 'https://sepolia-api-v2.ethscriptions.com',
-    id: '111,111',
-    mode: 'transfers',
+    input: 'data:,wgw',
+    checkExists: true,
+    includeInput: false,
+    expand: true,
+    with: 'current_owner',
     // input: bytesToHex(new TextEncoder().encode('data:,wgw.lol')),
   });
 
-  console.log('RESULT>>>', res);
+  const canInscribe = Boolean(res.exists?.[res.sha] === null);
+
+  console.log('RESULT>>>', { canInscribe }, res);
 } catch (e: any) {
   console.error('ERROR>>>', getError(e), getError(e.cause));
 }
