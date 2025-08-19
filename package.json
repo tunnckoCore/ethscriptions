@@ -1,17 +1,17 @@
 {
   "name": "ethscriptions",
-  "version": "0.10.0",
+  "version": "0.10.2",
   "license": "MPL-2.0",
   "description": "Library with utility functions for Ethscriptions. Supports for fetching user profiles, filtering ethscriptions, and resolving names & ENS builtin",
   "author": "wgw <wgw@wgw.lol>",
-  "homepage": "https://github.com/tunnckoCore/calldata.space",
+  "homepage": "https://github.com/tunnckoCore/ethscriptions",
   "funding": [
     "https://ko-fi.com/tunnckoCore/commissions",
     "https://github.com/sponsors/tunnckoCore"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/tunnckoCore/calldata.space.git"
+    "url": "https://github.com/tunnckoCore/ethscriptions.git"
   },
   "type": "module",
   "scripts": {
