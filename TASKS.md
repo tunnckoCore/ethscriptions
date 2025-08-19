@@ -220,8 +220,8 @@ async function getUserCreatedEthscritions(val: string, options?: any): Promise<R
 - `new_src/router/procedures/user-created.ts`
 - `new_src/router/index.ts` (add to router)
 
-#### Task 2.7: Convert `getUserOwnedEthscriptions()` ⏳
-**Status**: Not Started
+#### Task 2.7: Convert `getUserOwnedEthscriptions()` ✅
+**Status**: Completed
 **Priority**: Medium
 **Estimated Time**: 1 hour
 
@@ -231,21 +231,21 @@ async function getUserOwnedEthscriptions(val: string, options?: any): Promise<Re
 ```
 
 **Acceptance Criteria**:
-- [ ] Create Zod schema for val input
-- [ ] Create Zod schema for options parameter
-- [ ] Create Zod schema for EthscriptionBase[] output
-- [ ] Convert function to oRPC procedure
-- [ ] Delegate to getAllEthscriptions with current_owner filter
-- [ ] Add procedure to router
-- [ ] Update progress in this file
+- [x] Create Zod schema for val input
+- [x] Create Zod schema for options parameter
+- [x] Create Zod schema for EthscriptionBase[] output
+- [x] Convert function to oRPC procedure
+- [x] Delegate to getAllEthscriptions with current_owner filter
+- [x] Add procedure to router
+- [x] Update progress in this file
 
 **Files to Create/Modify**:
 - `new_src/router/schemas/user-owned.ts`
 - `new_src/router/procedures/user-owned.ts`
 - `new_src/router/index.ts` (add to router)
 
-#### Task 2.8: Convert `getAllEthscriptions()` ⏳
-**Status**: Not Started
+#### Task 2.8: Convert `getAllEthscriptions()` ✅
+**Status**: Completed
 **Priority**: High
 **Estimated Time**: 2 hours
 
@@ -255,13 +255,13 @@ async function getAllEthscriptions(options: any): Promise<Result<EthscriptionBas
 ```
 
 **Acceptance Criteria**:
-- [ ] Create comprehensive Zod schema for all filter options
-- [ ] Create Zod schema for pagination parameters
-- [ ] Create Zod schema for EthscriptionBase[] output
-- [ ] Convert function to oRPC procedure
-- [ ] Handle all filtering and pagination logic
-- [ ] Add procedure to router
-- [ ] Update progress in this file
+- [x] Create comprehensive Zod schema for all filter options
+- [x] Create Zod schema for pagination parameters
+- [x] Create Zod schema for EthscriptionBase[] output
+- [x] Convert function to oRPC procedure
+- [x] Handle all filtering and pagination logic
+- [x] Add procedure to router
+- [x] Update progress in this file
 
 **Files to Create/Modify**:
 - `new_src/router/schemas/all-ethscriptions.ts`
@@ -384,7 +384,7 @@ async function estimateDataCost(input: `data:${string}` | `0x${string}` | Uint8A
 
 ## Progress Tracking
 
-### Completed Tasks: 7/15 (46.7%)
+### Completed Tasks: 9/15 (60.0%)
 - Task 1.1: Setup Basic oRPC Infrastructure ✅
 - Task 2.1: Convert `getPrices()` ✅
 - Task 2.2: Convert `multiCheckExists()` ✅
@@ -392,10 +392,12 @@ async function estimateDataCost(input: `data:${string}` | `0x${string}` | Uint8A
 - Task 2.4: Convert `getUserProfile()` ✅
 - Task 2.5: Convert `getDigestForData()` ✅
 - Task 2.6: Convert `getUserCreatedEthscritions()` ✅
+- Task 2.7: Convert `getUserOwnedEthscriptions()` ✅
+- Task 2.8: Convert `getAllEthscriptions()` ✅
 
-### Current Task: Task 2.7 - Convert `getUserOwnedEthscriptions()`
+### Current Task: Task 2.9 - Convert `getEthscriptionById()`
 
-### Next Up: Task 2.8 - Convert `getAllEthscriptions()`
+### Next Up: Task 2.10 - Convert `getEthscriptionDetailed()`
 
 ---
 

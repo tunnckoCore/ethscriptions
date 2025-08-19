@@ -283,15 +283,6 @@ export const BaseQuerySchema = BaseOptionsSchema.extend(
     .partial().shape
 );
 
-// Utility functions
-export const createPaginationSchema = () =>
-  z
-    .object({
-      page: z.number().int().min(1).optional(),
-      per_page: z.number().int().min(1).max(100).optional(),
-    })
-    .optional();
-
 // Data input validation for complex types
 export const DataInputSchema = z.union([
   z

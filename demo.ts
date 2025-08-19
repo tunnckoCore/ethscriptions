@@ -17,7 +17,10 @@ import { client, unsafeClient } from './new_src/index.ts';
 //   user: 'wgw',
 //   page_size: 5,
 // });
-const [error, data] = await [null, 1];
+const [error, data] = await client.getUserOwnedEthscriptions({
+  user: 'wgw.eth',
+  page_size: 10,
+});
 
 if (error) {
   console.error(
@@ -26,7 +29,7 @@ if (error) {
     // (result?.error as any)?.data?.issues?.[0]?.errors
   );
 } else {
-  console.log('RESULT:', data);
+  console.log('RESULT:', data.length);
 }
 
 function getError(e: any) {

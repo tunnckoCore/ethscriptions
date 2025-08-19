@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: MPL-2.0
 
 import type { RouterClient } from '@orpc/server';
+import { getAllEthscriptionsProcedure } from './procedures/all-ethscriptions.ts';
 import { multiCheckExistsProcedure } from './procedures/check-exists.ts';
 import { getDigestForDataProcedure } from './procedures/digest.ts';
 import { pricesProcedure } from './procedures/prices.ts';
 import { resolveUserProcedure } from './procedures/resolve-user.ts';
 import { getUserCreatedEthscriptionsProcedure } from './procedures/user-created.ts';
+import { getUserOwnedEthscriptionsProcedure } from './procedures/user-owned.ts';
 import { getUserProfileProcedure } from './procedures/user-profile.ts';
 
 // Main router - procedures will be added here as they're converted
@@ -16,9 +18,9 @@ export const router = {
   getUserProfile: getUserProfileProcedure,
   getDigestForData: getDigestForDataProcedure,
   getUserCreatedEthscriptions: getUserCreatedEthscriptionsProcedure,
+  getUserOwnedEthscriptions: getUserOwnedEthscriptionsProcedure,
+  getAllEthscriptions: getAllEthscriptionsProcedure,
   // Procedures will be added here incrementally
-  // getUserOwnedEthscriptions: getUserOwnedEthscriptionsProcedure,
-  // getAllEthscriptions: getAllEthscriptionsProcedure,
   // getEthscriptionById: getEthscriptionByIdProcedure,
   // getEthscriptionDetailed: getEthscriptionDetailedProcedure,
   // estimateDataCost: estimateDataCostProcedure,

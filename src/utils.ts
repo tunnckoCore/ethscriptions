@@ -309,6 +309,20 @@ export function filtersNormalizer(
     delete opts.owner;
   }
 
+  // blocks
+  if (opts.min_block_number) {
+    opts.after_block = opts.min_block_number;
+    delete opts.min_block_number;
+  }
+  if (opts.max_block_number) {
+    opts.before_block = opts.max_block_number;
+    delete opts.max_block_number;
+  }
+  if (opts.block_hash) {
+    opts.block_blockhash = opts.block_hash;
+    delete opts.block_hash;
+  }
+
   // content_type is equal to `<media_type>/<media_subtype>`, it's called "mimetype" in upstream
   if (opts.content_type) {
     opts.mimetype = opts.content_type;
