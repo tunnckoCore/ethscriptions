@@ -1,6 +1,6 @@
 {
   "name": "ethscriptions",
-  "version": "0.10.3",
+  "version": "0.10.4",
   "license": "MPL-2.0",
   "description": "Library with utility functions for Ethscriptions. Supports for fetching user profiles, filtering ethscriptions, and resolving names & ENS builtin",
   "author": "wgw <wgw@wgw.lol>",
@@ -58,6 +58,7 @@
     "@orpc/server": "^1.8.0",
     "cdn-cache-control": "^1.1.0",
     "file-type": "^21.0.0",
+    "hono": "^4.9.2",
     "qs-esm": "^7.0.2",
     "zod": "^4.0.17"
   },

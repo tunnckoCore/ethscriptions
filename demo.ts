@@ -1,7 +1,8 @@
 // import { createSafeClient } from '@orpc/client';
 // import { call, createRouterClient, os } from '@orpc/server';
 // import z from 'zod';
-import { sdk, unsafeSDK } from './orpc/index.ts';
+import { client } from "./orpc/http.ts";
+import { sdk, unsafeSDK } from "./orpc/index.ts";
 
 // DO NOT REMOVE
 // const [error, data] = await client.getDigestForData({
@@ -17,31 +18,42 @@ import { sdk, unsafeSDK } from './orpc/index.ts';
 //   user: 'wgw',
 //   page_size: 5,
 // });
-try {
-  // const res = await unsafeSDK.getDigestForData({
-  //   // baseURL: 'https://sepolia-api-v2.ethscriptions.com',
-  //   input: 'data:,wgw',
-  //   checkExists: true,
-  //   includeInput: false,
-  //   expand: true,
-  //   with: 'current_owner',
-  //   // input: bytesToHex(new TextEncoder().encode('data:,wgw.lol')),
-  // });
 
-  // const canInscribe = Boolean(res.exists?.[res.sha] === null);
+// const res = await unsafeSDK.getDigestForData({
+//   // baseURL: 'https://sepolia-api-v2.ethscriptions.com',
+//   input: 'data:,wgw',
+//   checkExists: true,
+//   includeInput: false,
+//   expand: true,
+//   with: 'current_owner',
+//   // input: bytesToHex(new TextEncoder().encode('data:,wgw.lol')),
+// });
 
-  const res = await unsafeSDK.getAllEthscriptions({
-    attachment_present: true,
-    // reverse: true,
-    creator: 'wgw.eth',
-    resolve: true,
-    with: 'ethscription_number',
-  });
-  // console.log('RESULT>>>', { canInscribe }, res);
-  console.log('RESULT>>>', res);
-} catch (e: any) {
-  console.error('ERROR>>>', getError(e), getError(e.cause));
-}
+// const canInscribe = Boolean(res.exists?.[res.sha] === null);
+
+const existRes = await client.utils
+	.checkExists({
+		inputs: ["data:,wgw", "data:,dsfsdfsdfsddf"],
+		expand: true,
+		with: "current_owner",
+		only: "current_owner,transaction_hash,block_datetime",
+	})
+	.catch((e) => {
+		console.error("wut?", e);
+	});
+
+console.log("exists", existRes);
+
+// const res = await unsafeSDK.getAllEthscriptions({
+//   attachment_present: true,
+//   // reverse: true,
+//   creator: 'wgw.eth',
+//   resolve: true,
+//   with: 'ethscription_number',
+// });
+// console.log('RESULT>>>', { canInscribe }, res);
+// console.log('RESULT>>>', res);
+
 // if (error) {
 //   console.error(
 //     'ERRRRR:',
@@ -52,13 +64,3 @@ try {
 // } else {
 //   console.log('RESULT:', data);
 // }
-
-function getError(e: any) {
-  return (
-    e?.cause?.issues?.[0]?.errors ||
-    (e as any)?.issues ||
-    (e as any)?.data?.issues?.[0]?.errors ||
-    (e as any)?.data?.issues?.[0] ||
-    (e as any)?.data
-  );
-}

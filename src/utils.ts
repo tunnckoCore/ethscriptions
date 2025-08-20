@@ -1,623 +1,653 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 // SPDX-License-Identifier: MPL-2.0
 
-import { CacheHeaders } from 'cdn-cache-control';
-import * as qs from 'qs-esm';
+import { CacheHeaders } from "cdn-cache-control";
+import * as qs from "qs-esm";
 
-import { BASE_API_URL } from './const.ts';
-import { HexSchema } from './schema.ts';
+import { BASE_API_URL } from "./const.ts";
+import { HexSchema } from "./schema.ts";
 import type {
-  EthscriptionBase,
-  EthscriptionTransfer,
-  NotOkShape,
-  OkShape,
-  PaginationType,
-  // PricesResult,
-} from './types.ts';
+	EthscriptionBase,
+	EthscriptionTransfer,
+	NotOkShape,
+	OkShape,
+	PaginationType,
+	// PricesResult,
+} from "./types.ts";
 
 export async function upstreamFetcher<
-  T extends Record<string, any> = Record<string, any>,
+	T extends Record<string, any> = Record<string, any>,
 >(
-  options?: any,
-  id?: string | null
+	options?: any,
+	id?: string | null,
 ): Promise<OkShape<Uint8Array | T> | NotOkShape> {
-  let opts = {
-    resolve: false,
-    baseURL: BASE_API_URL,
-    ...filtersNormalizer({ ...options }),
-  } as any;
+	let opts = {
+		resolve: false,
+		baseURL: BASE_API_URL,
+		...filtersNormalizer({ ...options }),
+	} as any;
 
-  if (opts.resolve) {
-    let res: typeof opts;
+	if (opts.resolve) {
+		let res: typeof opts;
 
-    try {
-      res = (await resolveAddressPatches(opts)) as typeof opts;
-    } catch (er: any) {
-      console.error(
-        'Error stack (failed to resolve address patches)',
-        er.stack
-      );
-      return {
-        ok: false,
-        error: {
-          message: `Failed to resolve address patches: ${er.toString()}`,
-          httpStatus: 500,
-        },
-      } as NotOkShape;
-    }
+		try {
+			res = (await resolveAddressPatches(opts)) as typeof opts;
+		} catch (er: any) {
+			console.error(
+				"Error stack (failed to resolve address patches)",
+				er.stack,
+			);
+			return {
+				ok: false,
+				error: {
+					message: `Failed to resolve address patches: ${er.toString()}`,
+					httpStatus: 500,
+				},
+			} as NotOkShape;
+		}
 
-    opts = { ...opts, ...res };
-  } else {
-    logHints(opts);
-  }
+		opts = { ...opts, ...res };
+	} else {
+		logHints(opts);
+	}
 
-  const { baseURL = BASE_API_URL } = opts;
+	const { baseURL = BASE_API_URL } = opts;
 
-  delete opts.resolve;
-  delete opts.baseURL;
-  delete opts.expand;
-  delete opts.with;
+	delete opts.resolve;
+	delete opts.baseURL;
+	delete opts.expand;
+	delete opts.with;
 
-  const searchStr = qs.stringify(opts, { encode: false, indices: false });
+	const searchStr = qs.stringify(opts, { encode: false, indices: false });
 
-  // for the mime subtype filters (vnd.esc.user.profile+json)
-  const searchParams = new URLSearchParams(searchStr.replaceAll('+', '%2B'));
+	// for the mime subtype filters (vnd.esc.user.profile+json)
+	const searchParams = new URLSearchParams(searchStr.replaceAll("+", "%2B"));
 
-  // const ETH_ID = id ? id.split('/')[0] : '';
-  const isAttachment = id && /attach|blob/i.test(id);
-  const fpath = (
-    isAttachment ? [id.split('/')[0], 'attachment'] : [id || '']
-  ).join('/');
-  const search = Object.entries(opts).length > 0 ? `?${searchParams}` : '';
+	// const ETH_ID = id ? id.split('/')[0] : '';
+	const isAttachment = id && /attach|blob/i.test(id);
+	const fpath = (
+		isAttachment ? [id.split("/")[0], "attachment"] : [id || ""]
+	).join("/");
+	const search = Object.entries(opts).length > 0 ? `?${searchParams}` : "";
+	const oneDay = 24 * 60 * 60;
+	const defaultCacheOpts = {
+		"100-199": 0,
+		"200-299": oneDay * 30,
+		"300-399": 300,
+		"400-499": 10,
+		"500-599": 10,
+	};
 
-  let resp: any;
+	const cfFetchCacheOptions =
+		Boolean(opts.cf) === false
+			? undefined
+			: /.+owner|creator|receiver|previous|initial|transfer$/i.test(fpath)
+				? {
+						cf: {
+							cacheEverything: true,
+							cacheTtlByStatus: defaultCacheOpts,
+							cacheTags: ["ethscriptions", ...fpath.split("/")],
+						},
+					}
+				: /.+number|index|stat|info$/i.test(fpath)
+					? {
+							cf: {
+								cacheEverything: true,
+								cacheTtlByStatus: { ...defaultCacheOpts, "200-299": 3600 },
+								cacheTags: ["ethscriptions", ...fpath.split("/")],
+							},
+						}
+					: undefined;
 
-  try {
-    // console.log(
-    //   'before upstream fetch:',
-    //   `${baseURL}/ethscriptions${id ? `/${fpath}` : ''}${search}`,
-    // );
-    resp = await fetch(
-      `${baseURL}/ethscriptions${id ? `/${fpath}` : ''}${search}`
-    );
-  } catch (err: any) {
-    return {
-      ok: false,
-      error: {
-        message: `Fetch failed unexpectedly: ${err?.toString()}`,
-        httpStatus: 500,
-      },
-    } as NotOkShape;
-  }
+	let resp: any;
 
-  if (!resp.ok) {
-    console.error(
-      'Failed to fetch data from upstream API:',
-      resp.status,
-      resp.statusText
-    );
+	try {
+		// console.log(
+		//   'before upstream fetch:',
+		//   `${baseURL}/ethscriptions${id ? `/${fpath}` : ''}${search}`,
+		// );
+		resp = await fetch(
+			`${baseURL}/ethscriptions${id ? `/${fpath}` : ""}${search}`,
+			cfFetchCacheOptions as any,
+		);
+	} catch (err: any) {
+		return {
+			ok: false,
+			error: {
+				message: `Fetch failed unexpectedly: ${err?.toString()}`,
+				httpStatus: 500,
+			},
+		} as NotOkShape;
+	}
 
-    return {
-      ok: false,
-      error: {
-        message: 'Transaction not found or it is not an Ethscription.',
-        httpStatus: resp.status,
-      },
-    };
-  }
+	if (!resp.ok) {
+		console.error(
+			"Failed to fetch data from upstream API:",
+			resp.status,
+			resp.statusText,
+		);
 
-  if (isAttachment) {
-    return { ok: true, result: new Uint8Array(await resp.arrayBuffer()) };
-  }
+		return {
+			ok: false,
+			error: {
+				message: "Transaction not found or it is not an Ethscription.",
+				httpStatus: resp.status,
+			},
+		};
+	}
 
-  let data: any;
+	if (isAttachment) {
+		return { ok: true, result: new Uint8Array(await resp.arrayBuffer()) };
+	}
 
-  try {
-    data = await resp.json();
-  } catch (err: any) {
-    return {
-      ok: false,
-      error: {
-        message: `Failed to parse JSON response: ${err?.toString()}`,
-        httpStatus: 500,
-      },
-    };
-  }
+	let data: any;
 
-  // const result = Array.isArray(data.result)
-  //   ? data.result.map((x) => normalizeResult(x, url))
-  //   : normalizeResult(data.result, url);
+	try {
+		data = await resp.json();
+	} catch (err: any) {
+		return {
+			ok: false,
+			error: {
+				message: `Failed to parse JSON response: ${err?.toString()}`,
+				httpStatus: 500,
+			},
+		};
+	}
 
-  // console.log('bruh, ETH_ID:', ETH_ID);
-  // console.log('bruh, resp tx hash:', data.result.transaction_hash);
+	// const result = Array.isArray(data.result)
+	//   ? data.result.map((x) => normalizeResult(x, url))
+	//   : normalizeResult(data.result, url);
 
-  // if (ETH_ID && ETH_ID !== data.result.transaction_hash) {
-  //   return {
-  //     ok: false,
-  //     error: {
-  //       message: `Transaction hash mismatch: ${ETH_ID} !== ${data.result.transaction_hash}`,
-  //       httpStatus: 400,
-  //     },
-  //   };
-  // }
+	// console.log('bruh, ETH_ID:', ETH_ID);
+	// console.log('bruh, resp tx hash:', data.result.transaction_hash);
 
-  const res = { ok: true, result: data.result } as OkShape<T>;
+	// if (ETH_ID && ETH_ID !== data.result.transaction_hash) {
+	//   return {
+	//     ok: false,
+	//     error: {
+	//       message: `Transaction hash mismatch: ${ETH_ID} !== ${data.result.transaction_hash}`,
+	//       httpStatus: 400,
+	//     },
+	//   };
+	// }
 
-  if (data.pagination) {
-    res.pagination = data.pagination;
-    const ret = { ...res } as OkShape<T> & { pagination: PaginationType };
-    return ret;
-  }
+	const res = { ok: true, result: data.result } as OkShape<T>;
 
-  return res;
+	if (data.pagination) {
+		res.pagination = data.pagination;
+		const ret = { ...res } as OkShape<T> & { pagination: PaginationType };
+		return ret;
+	}
+
+	return res;
 }
 
 function logHints(opts: any = {}) {
-  if (
-    opts.creator &&
-    !opts.creator.startsWith('0x') &&
-    opts.creator.length > 2
-  ) {
-    console.info(
-      'Creator is not an address, maybe you want to use `resolve: true`'
-    );
-  } else if (
-    (opts.owner && !opts.owner.startsWith('0x') && opts.owner.length > 2) ||
-    (opts.current_owner &&
-      !opts.current_owner.startsWith('0x') &&
-      opts.current_owner.length > 2)
-  ) {
-    console.info(
-      'Current owner is not an address, maybe you want to use `resolve: true`'
-    );
-  } else if (
-    (opts.initial &&
-      !opts.initial.startsWith('0x') &&
-      opts.initial.length > 2) ||
-    (opts.initial_owner &&
-      !opts.initial_owner.startsWith('0x') &&
-      opts.initial_owner.length > 2) ||
-    (opts.receiver &&
-      !opts.receiver.startsWith('0x') &&
-      opts.receiver.length > 2)
-  ) {
-    console.info(
-      'Initial owner (receiver) is not an address, maybe you want to use `resolve: true`'
-    );
-  }
+	if (
+		opts.creator &&
+		!opts.creator.startsWith("0x") &&
+		opts.creator.length > 2
+	) {
+		console.info(
+			"Creator is not an address, maybe you want to use `resolve: true`",
+		);
+	} else if (
+		(opts.owner && !opts.owner.startsWith("0x") && opts.owner.length > 2) ||
+		(opts.current_owner &&
+			!opts.current_owner.startsWith("0x") &&
+			opts.current_owner.length > 2)
+	) {
+		console.info(
+			"Current owner is not an address, maybe you want to use `resolve: true`",
+		);
+	} else if (
+		(opts.initial &&
+			!opts.initial.startsWith("0x") &&
+			opts.initial.length > 2) ||
+		(opts.initial_owner &&
+			!opts.initial_owner.startsWith("0x") &&
+			opts.initial_owner.length > 2) ||
+		(opts.receiver &&
+			!opts.receiver.startsWith("0x") &&
+			opts.receiver.length > 2)
+	) {
+		console.info(
+			"Initial owner (receiver) is not an address, maybe you want to use `resolve: true`",
+		);
+	}
 }
 
 export function normalizeAndSortTransfers(
-  transfers: any[]
+	transfers: any[],
 ): EthscriptionTransfer[] {
-  return (
-    transfers
+	return (
+		transfers
 
-      .map(({ ethscription_transaction_hash, block_blockhash, ...x }, idx) => ({
-        ...x,
-        block_hash: block_blockhash,
-        is_esip0: idx === 0,
-        // theoretically, it could be ESIP-1 Transfer too, but ESIP-2 is more used and more likely
-        is_esip1: Boolean(x.event_log_index !== null),
-        is_esip2: Boolean(x.event_log_index !== null),
-      }))
-      // sort by block number, ascending
-      .sort((a, b) => a.block_number - b.block_number)
-      .map((x, idx) => ({
-        ...x,
-        transfer_index: idx,
-      }))
-      // sort by block number, descending after setting the transfer index
-      .sort((a, b) => b.block_number - a.block_number)
-  );
+			.map(({ ethscription_transaction_hash, block_blockhash, ...x }, idx) => ({
+				...x,
+				block_hash: block_blockhash,
+				is_esip0: idx === 0,
+				// theoretically, it could be ESIP-1 Transfer too, but ESIP-2 is more used and more likely
+				is_esip1: Boolean(x.event_log_index !== null),
+				is_esip2: Boolean(x.event_log_index !== null),
+			}))
+			// sort by block number, ascending
+			.sort((a, b) => a.block_number - b.block_number)
+			.map((x, idx) => ({
+				...x,
+				transfer_index: idx,
+			}))
+			// sort by block number, descending after setting the transfer index
+			.sort((a, b) => b.block_number - a.block_number)
+	);
 }
 
 export function normalizeResult(result: any, options?: any): EthscriptionBase {
-  const opts = { ...options };
+	const opts = { ...options };
 
-  const keys = Object.keys(result || {});
+	const keys = Object.keys(result || {});
 
-  const withs = Array.isArray(opts.with)
-    ? opts.with
-    : opts.with?.split(',') || [];
-  const onlys = Array.isArray(opts.only)
-    ? opts.only
-    : opts.only?.split(',') || [];
-  const isTxOnly =
-    (keys.length === 1 && keys[0] === 'transaction_hash') ||
-    opts.transaction_hash_only;
+	const withs = Array.isArray(opts.with)
+		? opts.with
+		: opts.with?.split(",") || [];
+	const onlys = Array.isArray(opts.only)
+		? opts.only
+		: opts.only?.split(",") || [];
+	const isTxOnly =
+		(keys.length === 1 && keys[0] === "transaction_hash") ||
+		opts.transaction_hash_only;
 
-  if (isTxOnly) {
-    console.log({ isTxOnly });
-    return result;
-  }
+	if (isTxOnly) {
+		console.log({ isTxOnly });
+		return result;
+	}
 
-  const res = {
-    block_number: Number(result.block_number),
-    block_hash: result.block_blockhash,
-    block_timestamp: Number(result.block_timestamp),
-    block_datetime: new Date(
-      Number(result.block_timestamp) * 1000
-    ).toISOString(),
-    transaction_hash: result.transaction_hash,
-    transaction_index: Number(result.transaction_index),
-    transaction_value: BigInt(String(result.value).replace(/\.0$/, '')),
-    transaction_fee: BigInt(String(result.transaction_fee).replace(/\.0$/, '')),
-    gas_price: BigInt(String(result.gas_price).replace(/\.0$/, '')),
-    gas_used: BigInt(result.gas_used),
-    creator: result.creator,
-    receiver: result.initial_owner,
-    media_type: result.media_type,
-    media_subtype: result.mime_subtype,
-    content_type: result.mimetype,
-    content_sha: result.content_sha,
-    content_path: `/ethscriptions/${result.transaction_hash}/content`,
-    owners_path: `/ethscriptions/${result.transaction_hash}/owners`,
-    numbers_path: `/ethscriptions/${result.transaction_hash}/numbers`,
-    transfers_path: `/ethscriptions/${result.transaction_hash}/transfers`,
-    // Note use `with=content_uri`
-    // ...(withContent ? { content_uri: result.content_uri } : {}),
-    ...(result.attachment_sha
-      ? {
-          attachment_content_type: result.attachment_content_type,
-          attachment_media_type:
-            result.attachment_content_type.split('/')?.at(0) || null,
-          attachment_sha: result.attachment_sha,
-          attachment_path: `/ethscriptions/${result.transaction_hash}/attachment`,
-        }
-      : {}),
-    is_esip0: Boolean(result.event_log_index === null),
-    is_esip3: Boolean(result.event_log_index !== null),
-    is_esip4: result.content_uri?.includes('vnd.facet.tx+json'),
-    is_esip6: result.esip6,
-    is_esip8: Boolean(result.attachment_sha),
-  };
+	const res = {
+		block_number: Number(result.block_number),
+		block_hash: result.block_blockhash,
+		block_timestamp: Number(result.block_timestamp),
+		block_datetime: new Date(
+			Number(result.block_timestamp) * 1000,
+		).toISOString(),
+		transaction_hash: result.transaction_hash,
+		transaction_index: Number(result.transaction_index),
+		transaction_value: BigInt(String(result.value).replace(/\.0$/, "")),
+		transaction_fee: BigInt(String(result.transaction_fee).replace(/\.0$/, "")),
+		gas_price: BigInt(String(result.gas_price).replace(/\.0$/, "")),
+		gas_used: BigInt(result.gas_used),
+		creator: result.creator,
+		receiver: result.initial_owner,
+		media_type: result.media_type,
+		media_subtype: result.mime_subtype,
+		content_type: result.mimetype,
+		content_sha: result.content_sha,
+		content_path: `/ethscriptions/${result.transaction_hash}/content`,
+		owners_path: `/ethscriptions/${result.transaction_hash}/owners`,
+		numbers_path: `/ethscriptions/${result.transaction_hash}/numbers`,
+		transfers_path: `/ethscriptions/${result.transaction_hash}/transfers`,
+		// Note use `with=content_uri`
+		// ...(withContent ? { content_uri: result.content_uri } : {}),
+		...(result.attachment_sha
+			? {
+					attachment_content_type: result.attachment_content_type,
+					attachment_media_type:
+						result.attachment_content_type.split("/")?.at(0) || null,
+					attachment_sha: result.attachment_sha,
+					attachment_path: `/ethscriptions/${result.transaction_hash}/attachment`,
+				}
+			: {}),
+		is_esip0: Boolean(result.event_log_index === null),
+		is_esip3: Boolean(result.event_log_index !== null),
+		is_esip4: result.content_uri?.includes("vnd.facet.tx+json"),
+		is_esip6: result.esip6,
+		is_esip8: Boolean(result.attachment_sha),
+	};
 
-  const onlyRes = Object.fromEntries(
-    Object.entries(res).filter(([key]) => {
-      if (onlys.length > 0) {
-        return onlys.includes(key);
-      }
-      return true;
-    })
-  );
+	const onlyRes = Object.fromEntries(
+		Object.entries(res).filter(([key]) => {
+			if (onlys.length > 0) {
+				return onlys.includes(key);
+			}
+			return true;
+		}),
+	);
 
-  const withRes = withs.reduce((acc: typeof onlyRes, withKey: string) => {
-    if (!acc[withKey]) {
-      acc[withKey] = (res as any)[withKey] || result[withKey];
-    }
+	const withRes = withs.reduce((acc: typeof onlyRes, withKey: string) => {
+		if (!acc[withKey]) {
+			acc[withKey] = (res as any)[withKey] || result[withKey];
+		}
 
-    return acc;
-  }, onlyRes);
+		return acc;
+	}, onlyRes);
 
-  return withRes.length > 0 ? (withRes as typeof withRes) : (onlyRes as any);
+	return withRes.length > 0 ? (withRes as typeof withRes) : (onlyRes as any);
 }
 
 export function filtersNormalizer(
-  opts: Record<string, any>
+	opts: Record<string, any>,
 ): Record<string, any> {
-  // consistency, we name mime_subtype as media_subtype, to be consistent with media_type
-  // if (url.searchParams.get('media_subtype')) {
-  //   url.searchParams.set('mime_subtype', url.searchParams.get('media_subtype') || '');
-  //   url.searchParams.delete('media_subtype');
-  // }
+	// consistency, we name mime_subtype as media_subtype, to be consistent with media_type
+	// if (url.searchParams.get('media_subtype')) {
+	//   url.searchParams.set('mime_subtype', url.searchParams.get('media_subtype') || '');
+	//   url.searchParams.delete('media_subtype');
+	// }
 
-  if (opts.media_subtype) {
-    opts.mime_subtype = opts.media_subtype;
-    delete opts.media_subtype;
-  }
+	if (opts.media_subtype) {
+		opts.mime_subtype = opts.media_subtype;
+		delete opts.media_subtype;
+	}
 
-  if (opts.per_page) {
-    opts.max_results = opts.per_page;
-    // delete opts.per_page;
-  }
+	if (opts.per_page) {
+		opts.max_results = opts.per_page;
+		// delete opts.per_page;
+	}
 
-  if (opts.page_size) {
-    opts.max_results = opts.page_size;
-    // delete opts.per_page;
-  }
+	if (opts.page_size) {
+		opts.max_results = opts.page_size;
+		// delete opts.per_page;
+	}
 
-  if (opts.cursor) {
-    opts.page_key = opts.cursor;
-    delete opts.cursor;
-  }
+	if (opts.cursor) {
+		opts.page_key = opts.cursor;
+		delete opts.cursor;
+	}
 
-  // patch `receiver` with `initial_owner` for consistency with other fields
-  if (opts.receiver) {
-    opts.initial_owner = opts.receiver;
-    delete opts.receiver;
-  }
+	// patch `receiver` with `initial_owner` for consistency with other fields
+	if (opts.receiver) {
+		opts.initial_owner = opts.receiver;
+		delete opts.receiver;
+	}
 
-  // patch `initial` with `initial_owner` for consistency with other fields
-  if (opts.initial) {
-    opts.initial_owner = opts.initial;
-    delete opts.initial;
-  }
+	// patch `initial` with `initial_owner` for consistency with other fields
+	if (opts.initial) {
+		opts.initial_owner = opts.initial;
+		delete opts.initial;
+	}
 
-  // patch `previous` with `previous_owner` for consistency with other fields
-  if (opts.previous) {
-    opts.previous_owner = opts.previous;
-    delete opts.previous;
-  }
+	// patch `previous` with `previous_owner` for consistency with other fields
+	if (opts.previous) {
+		opts.previous_owner = opts.previous;
+		delete opts.previous;
+	}
 
-  // patch `current` with `current_owner` for consistency with other fields
-  if (opts.current) {
-    opts.current_owner = opts.current;
-    delete opts.current;
-  }
-  if (opts.owner) {
-    opts.current_owner = opts.owner;
-    delete opts.owner;
-  }
+	// patch `current` with `current_owner` for consistency with other fields
+	if (opts.current) {
+		opts.current_owner = opts.current;
+		delete opts.current;
+	}
+	if (opts.owner) {
+		opts.current_owner = opts.owner;
+		delete opts.owner;
+	}
 
-  // blocks
-  if (opts.min_block_number) {
-    opts.after_block = opts.min_block_number;
-    delete opts.min_block_number;
-  }
-  if (opts.max_block_number) {
-    opts.before_block = opts.max_block_number;
-    delete opts.max_block_number;
-  }
-  if (opts.block_hash) {
-    opts.block_blockhash = opts.block_hash;
-    delete opts.block_hash;
-  }
+	// blocks
+	if (opts.min_block_number) {
+		opts.after_block = opts.min_block_number;
+		delete opts.min_block_number;
+	}
+	if (opts.max_block_number) {
+		opts.before_block = opts.max_block_number;
+		delete opts.max_block_number;
+	}
+	if (opts.block_hash) {
+		opts.block_blockhash = opts.block_hash;
+		delete opts.block_hash;
+	}
 
-  // content_type is equal to `<media_type>/<media_subtype>`, it's called "mimetype" in upstream
-  if (opts.content_type) {
-    opts.mimetype = opts.content_type;
-    delete opts.content_type;
-  }
-  // if `content_type[]=foo/bar&content_type[]=abc/qux`, eg it's is multiples
-  const params = Object.entries(opts);
-  if (params.some(([key]) => key.startsWith('content_type'))) {
-    const contentTypes = params
-      .filter(([key]) => key.startsWith('content_type'))
-      .map(([_, value]) => value);
-    opts.mimetype = contentTypes;
-  }
+	// content_type is equal to `<media_type>/<media_subtype>`, it's called "mimetype" in upstream
+	if (opts.content_type) {
+		opts.mimetype = opts.content_type;
+		delete opts.content_type;
+	}
+	// if `content_type[]=foo/bar&content_type[]=abc/qux`, eg it's is multiples
+	const params = Object.entries(opts);
+	if (params.some(([key]) => key.startsWith("content_type"))) {
+		const contentTypes = params
+			.filter(([key]) => key.startsWith("content_type"))
+			.map(([_, value]) => value);
+		opts.mimetype = contentTypes;
+	}
 
-  // support `is_esip6` instead of just `esip6` for consistency with fields and other ESIPs fiekds
-  // Note: no such `esip6` filter on upstream, i thought there is. But lets keep it for now
-  if (opts.is_esip6) {
-    opts.esip6 = opts.is_esip6;
-    delete opts.is_esip6;
-  }
+	// support `is_esip6` instead of just `esip6` for consistency with fields and other ESIPs fiekds
+	// Note: no such `esip6` filter on upstream, i thought there is. But lets keep it for now
+	if (opts.is_esip6) {
+		opts.esip6 = opts.is_esip6;
+		delete opts.is_esip6;
+	}
 
-  return { ...opts };
+	return { ...opts };
 }
 
 export function filtersNormalizerFromUrlSearchParams(
-  searchParams: URLSearchParams
+	searchParams: URLSearchParams,
 ): URLSearchParams {
-  const params = Array.from(searchParams.entries());
-  const opts = {};
-  for (const entry of params) {
-    const [key, value] = entry;
+	const params = Array.from(searchParams.entries());
+	const opts = {};
+	for (const entry of params) {
+		const [key, value] = entry;
 
-    opts[key] = opts[key]
-      ? Array.isArray(opts[key])
-        ? [...opts[key], value]
-        : [opts[key], value]
-      : value;
-  }
+		opts[key] = opts[key]
+			? Array.isArray(opts[key])
+				? [...opts[key], value]
+				: [opts[key], value]
+			: value;
+	}
 
-  const normalizedOptions = filtersNormalizer(opts);
-  const searchParamsStr = qs.stringify(normalizedOptions, {
-    encode: false,
-    indices: false,
-  });
+	const normalizedOptions = filtersNormalizer(opts);
+	const searchParamsStr = qs.stringify(normalizedOptions, {
+		encode: false,
+		indices: false,
+	});
 
-  return new URLSearchParams(searchParamsStr);
+	return new URLSearchParams(searchParamsStr);
 }
 
 export async function resolveAddressPatches(
-  options: any,
-  ensHandler?: any
+	options: any,
+	ensHandler?: any,
 ): Promise<Record<string, any>> {
-  const opts = { ...options };
+	const opts = { ...options };
 
-  const addressParams = Object.entries(opts).filter(
-    ([key, value]: any) =>
-      /creator|receiver|owner/i.test(key) &&
-      typeof value === 'string' &&
-      value.length > 0 &&
-      !isEthereumAddress(value)
-  );
+	const addressParams = Object.entries(opts).filter(
+		([key, value]: any) =>
+			/creator|receiver|owner/i.test(key) &&
+			typeof value === "string" &&
+			value.length > 0 &&
+			!isEthereumAddress(value),
+	);
 
-  const params = await Promise.all(
-    addressParams.map(async (x: any) => {
-      const [key, value] = x;
+	const params = await Promise.all(
+		addressParams.map(async (x: any) => {
+			const [key, value] = x;
 
-      // if it cannot resolve neither ENS, nor Ethscriptions Name, it returns null
-      const val = await namesResolver(
-        value,
-        ensHandler,
-        { ...options, resolveName: false } /* { publicClient } */
-      );
+			// if it cannot resolve neither ENS, nor Ethscriptions Name, it returns null
+			const val = await namesResolver(
+				value,
+				ensHandler,
+				{ ...options, resolveName: false } /* { publicClient } */,
+			);
 
-      // `val` is null, passthrough the `value`
-      return [key, val || value];
-    })
-  );
+			// `val` is null, passthrough the `value`
+			return [key, val || value];
+		}),
+	);
 
-  return { ...opts, ...Object.fromEntries(params) };
+	return { ...opts, ...Object.fromEntries(params) };
 }
 
 export async function namesResolver(
-  value: string,
-  ensHandler?: any,
-  options?: {
-    resolveName?: boolean;
-    primary?: boolean;
-    checkCreator?: boolean;
-    publicClient?: any;
-    baseURL?: string;
-  }
+	value: string,
+	ensHandler?: any,
+	options?: {
+		resolveName?: boolean;
+		primary?: boolean;
+		checkCreator?: boolean;
+		publicClient?: any;
+		baseURL?: string;
+	},
 ): Promise<string | null> {
-  const opts = { baseURL: BASE_API_URL, ...options };
-  const val = value.toLowerCase();
-  const handler = ensHandler || ensApiHandler;
+	const opts = { baseURL: BASE_API_URL, ...options };
+	const val = value.toLowerCase();
+	const handler = ensHandler || ensApiHandler;
 
-  const result = await handler(val, opts);
+	const result = await handler(val, opts);
 
-  // if ensdata API returns 404, or if there's no `address` and only `ens` then it's some mistake
-  if (result && result.address && result.ens) {
-    return (
-      opts.resolveName
-        ? opts.primary
-          ? result.ens_primary
-          : result.ens
-        : result.address
-    ).toLowerCase();
-  }
+	// if ensdata API returns 404, or if there's no `address` and only `ens` then it's some mistake
+	if (result && result.address && result.ens) {
+		return (
+			opts.resolveName
+				? opts.primary
+					? result.ens_primary
+					: result.ens
+				: result.address
+		).toLowerCase();
+	}
 
-  // thus if not properly resolved, we fallback to try to find address by Ethscription Name
-  // NOTE 1: by default "Ethscription Name" is every ethscription like `data:,[a-z0-9]` (insensitive),
-  // but the WGW API expand that definition to that it can be anything (like `59.eths` or `wgw.lol` too) that is not resolvable ENS domain
-  //
-  // NOTE 2: support reverse resolving, like passing an address and finding the primary Ethscription Name,
-  // which could be tricky because one can have multiple. The only way,
-  // is if they specifically set "primary" field in their Ethscription User Profile;
-  // or just return the first from a list of owned Ethscription Names
+	// thus if not properly resolved, we fallback to try to find address by Ethscription Name
+	// NOTE 1: by default "Ethscription Name" is every ethscription like `data:,[a-z0-9]` (insensitive),
+	// but the WGW API expand that definition to that it can be anything (like `59.eths` or `wgw.lol` too) that is not resolvable ENS domain
+	//
+	// NOTE 2: support reverse resolving, like passing an address and finding the primary Ethscription Name,
+	// which could be tricky because one can have multiple. The only way,
+	// is if they specifically set "primary" field in their Ethscription User Profile;
+	// or just return the first from a list of owned Ethscription Names
 
-  // NOTE 3: on `nameUri`. Should use the raw input and not force lowercase, because both are different things and SHAs.
-  // By default the Ethscription Name is case-insensitive (regex /[a-z0-9]/gi), and force lowercase, which may lead to scams, confusion, etc,
-  // For example: one can have `Foobie` and another have `foobie`, low-level stuff should be able to differentiate them.
-  // Higher-level APIs and tools can enforce the case-insensitivity, if they want to, by lowercasing before passing it to this function.
-  const nameUri = `data:,${value}`;
+	// NOTE 3: on `nameUri`. Should use the raw input and not force lowercase, because both are different things and SHAs.
+	// By default the Ethscription Name is case-insensitive (regex /[a-z0-9]/gi), and force lowercase, which may lead to scams, confusion, etc,
+	// For example: one can have `Foobie` and another have `foobie`, low-level stuff should be able to differentiate them.
+	// Higher-level APIs and tools can enforce the case-insensitivity, if they want to, by lowercasing before passing it to this function.
+	const nameUri = `data:,${value}`;
 
-  const nameSha = await createDigest(nameUri);
+	const nameSha = await createDigest(nameUri);
 
-  const resp: any = await fetch(
-    `${opts.baseURL}/ethscriptions/exists/0x${nameSha}`
-  ).then((x) => x.json());
+	const resp: any = await fetch(
+		`${opts.baseURL}/ethscriptions/exists/0x${nameSha}`,
+	).then((x) => x.json());
 
-  // console.log({ val, nameUri, nameSha, resp });
+	// console.log({ val, nameUri, nameSha, resp });
 
-  if (resp.result.exists) {
-    const eth = resp.result.ethscription;
-    return (opts.checkCreator ? eth.creator : eth.current_owner).toLowerCase();
-  }
+	if (resp.result.exists) {
+		const eth = resp.result.ethscription;
+		return (opts.checkCreator ? eth.creator : eth.current_owner).toLowerCase();
+	}
 
-  return null;
+	return null;
 }
 
 export async function ensApiHandler(
-  val: string | `0x${string}`
+	val: string | `0x${string}`,
 ): Promise<Record<string, any> | null> {
-  const resp = await fetch(`https://api.ensdata.net/${val}`);
+	const resp = await fetch(`https://api.ensdata.net/${val}`);
 
-  if (!resp.ok) {
-    return null;
-  }
+	if (!resp.ok) {
+		return null;
+	}
 
-  const data: any = await resp.json();
+	const data: any = await resp.json();
 
-  return data;
+	return data;
 }
 
 export async function ensBasicOnchainHandler(
-  val: string,
-  options?: { resolveName: boolean; publicClient: any; normalize: any }
+	val: string,
+	options?: { resolveName: boolean; publicClient: any; normalize: any },
 ): Promise<{ ens: string; address: `0x${string}` } | null> {
-  const opts = { ...options };
+	const opts = { ...options };
 
-  const address = await opts.publicClient.getEnsAddress({
-    name: opts.normalize(val),
-  });
+	const address = await opts.publicClient.getEnsAddress({
+		name: opts.normalize(val),
+	});
 
-  // getEnsAddress never throws, it returns the input if it's not an ENS name
-  if (address.toLowerCase() === val.toLowerCase()) {
-    return null;
-  }
+	// getEnsAddress never throws, it returns the input if it's not an ENS name
+	if (address.toLowerCase() === val.toLowerCase()) {
+		return null;
+	}
 
-  let ens = val;
+	let ens = val;
 
-  if (opts.resolveName) {
-    ens = await opts.publicClient.getEnsName({
-      address: val.toLowerCase(),
-    });
-  }
+	if (opts.resolveName) {
+		ens = await opts.publicClient.getEnsName({
+			address: val.toLowerCase(),
+		});
+	}
 
-  return { ens, address };
+	return { ens, address };
 }
 
 export function getHeaders(
-  time = 31_536_000, // 1 year
-  additionalHeaders = {},
-  cfType = 'must-revalidate'
+	time = 31_536_000, // 1 year
+	additionalHeaders = {},
+	cfType = "must-revalidate",
 ): CacheHeaders {
-  // adds vary, cache-control, and cdn-cache-control headers
-  const headers = new CacheHeaders({
-    'Netlify-CDN-Cache-Control': `public,s-maxage=${time},must-revalidate,durable`,
-    'Vercel-CDN-Cache-Control': `public,s-maxage=${time},must-revalidate`,
-    'Cloudflare-CDN-Cache-Control': `public,s-maxage=${time},${cfType}`,
-    ...additionalHeaders,
-  }).ttl(time);
+	// adds vary, cache-control, and cdn-cache-control headers
+	const headers = new CacheHeaders({
+		"Netlify-CDN-Cache-Control": `public,s-maxage=${time},must-revalidate,durable`,
+		"Vercel-CDN-Cache-Control": `public,s-maxage=${time},must-revalidate`,
+		"Cloudflare-CDN-Cache-Control": `public,s-maxage=${time},${cfType}`,
+		...additionalHeaders,
+	}).ttl(time);
 
-  return headers;
+	return headers;
 }
 
 export async function createDigest(
-  msg: string | Uint8Array,
-  algo: 'SHA-1' | 'SHA-256' | 'SHA-512' = 'SHA-256'
+	msg: string | Uint8Array,
+	algo: "SHA-1" | "SHA-256" | "SHA-512" = "SHA-256",
 ): Promise<string> {
-  const data = typeof msg === 'string' ? new TextEncoder().encode(msg) : msg;
-  const hashBuffer = await crypto.subtle.digest(algo, data as any);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hashHex = hashArray
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('');
-  return hashHex;
+	const data = typeof msg === "string" ? new TextEncoder().encode(msg) : msg;
+	const hashBuffer = await crypto.subtle.digest(algo, data as any);
+	const hashArray = Array.from(new Uint8Array(hashBuffer));
+	const hashHex = hashArray
+		.map((b) => b.toString(16).padStart(2, "0"))
+		.join("");
+	return hashHex;
 }
 
-export function numberFormat(x: string, delim = ','): string {
-  if (!x) {
-    return '';
-  }
+export function numberFormat(x: string, delim = ","): string {
+	if (!x) {
+		return "";
+	}
 
-  const str = String(x).split('').reverse().join('');
-  const mm = str.match(/.{1,3}/g);
+	const str = String(x).split("").reverse().join("");
+	const mm = str.match(/.{1,3}/g);
 
-  if (!mm) {
-    return x;
-  }
+	if (!mm) {
+		return x;
+	}
 
-  return mm
-    .map((z) => z.split('').reverse().join(''))
-    .reverse()
-    .join(delim);
+	return mm
+		.map((z) => z.split("").reverse().join(""))
+		.reverse()
+		.join(delim);
 }
 
 export function hexToBytes(str: string): Uint8Array {
-  return new Uint8Array(
-    [...str.matchAll(/../g)].map((m) => Number.parseInt(m[0], 16))
-  );
+	return new Uint8Array(
+		[...str.matchAll(/../g)].map((m) => Number.parseInt(m[0], 16)),
+	);
 }
 
 export function bytesToHex(bytes: Uint8Array): string {
-  return [...bytes].map((n) => n.toString(16)).join('');
+	return [...bytes].map((n) => n.toString(16)).join("");
 }
 
 export function isEthereumAddress(val: string): boolean {
-  return Boolean(
-    typeof val === 'string' &&
-      val.startsWith('0x') &&
-      HexSchema.safeParse(val).success &&
-      val.length === 42
-  );
+	return Boolean(
+		typeof val === "string" &&
+			val.startsWith("0x") &&
+			HexSchema.safeParse(val).success &&
+			val.length === 42,
+	);
 }
 
 export function isHexValue(val: string, prefixed = false): boolean {
-  if (prefixed) {
-    return Boolean(
-      typeof val === 'string' &&
-        val.startsWith('0x') &&
-        HexSchema.safeParse(val).success
-    );
-  }
+	if (prefixed) {
+		return Boolean(
+			typeof val === "string" &&
+				val.startsWith("0x") &&
+				HexSchema.safeParse(val).success,
+		);
+	}
 
-  return HexSchema.safeParse(val).success;
+	return HexSchema.safeParse(val).success;
 }
