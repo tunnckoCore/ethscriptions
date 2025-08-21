@@ -1,6 +1,6 @@
 {
   "name": "ethscriptions",
-  "version": "0.10.4",
+  "version": "0.11.0",
   "license": "MPL-2.0",
   "description": "Library with utility functions for Ethscriptions. Supports for fetching user profiles, filtering ethscriptions, and resolving names & ENS builtin",
   "author": "wgw <wgw@wgw.lol>",
@@ -54,8 +54,12 @@
     "tag": "latest"
   },
   "dependencies": {
-    "@orpc/client": "^1.8.0",
-    "@orpc/server": "^1.8.0",
+    "@orpc/client": "^1.8.2",
+    "@orpc/json-schema": "^1.8.2",
+    "@orpc/openapi": "^1.8.2",
+    "@orpc/openapi-client": "^1.8.2",
+    "@orpc/server": "^1.8.2",
+    "@orpc/zod": "^1.8.2",
     "cdn-cache-control": "^1.1.0",
     "file-type": "^21.0.0",
     "hono": "^4.9.2",

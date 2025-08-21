@@ -1,15 +1,11 @@
 // SPDX-License-Identifier: MPL-2.0
 
-import { ORPCError, os } from '@orpc/server';
-import {
-  GetPricesInputSchema,
-  GetPricesOutputSchema,
-} from '../schemas/prices.ts';
+import { ORPCError } from '@orpc/server';
+import { os } from '../contract-os.ts';
 
-export const pricesProcedure = os
-  .input(GetPricesInputSchema)
-  .output(GetPricesOutputSchema)
-  .handler(async ({ input }) => {
+export const getPricesProcedure = os.utils.getPrices.handler(
+  // biome-ignore lint/correctness/noUnusedFunctionParameters: bruh
+  async ({ input, context }) => {
     try {
       const resp = await fetch('https://www.ethgastracker.com/api/gas/latest');
 
@@ -43,4 +39,5 @@ export const pricesProcedure = os
         status: 500,
       });
     }
-  });
+  }
+);

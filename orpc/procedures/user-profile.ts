@@ -1,21 +1,16 @@
 // SPDX-License-Identifier: MPL-2.0
 
-import { ORPCError, os } from '@orpc/server';
-// Import original utilities until they are converted
+import { ORPCError } from '@orpc/server';
 import {
   isEthereumAddress,
   normalizeResult,
   upstreamFetcher,
-} from '../../../src/utils.ts';
-import {
-  GetUserProfileInputSchema,
-  GetUserProfileOutputSchema,
-} from '../schemas/user-profile.ts';
+} from '../../src/utils.ts';
+import { os } from '../contract-os.ts';
 
-export const getUserProfileProcedure = os
-  .input(GetUserProfileInputSchema)
-  .output(GetUserProfileOutputSchema)
-  .handler(async ({ input }) => {
+export const getUserProfileProcedure = os.users.getProfile.handler(
+  // biome-ignore lint/correctness/noUnusedFunctionParameters: bruh
+  async ({ input, context }) => {
     const res = await upstreamFetcher({
       baseURL: input.baseURL,
       resolve: input.resolve ?? isEthereumAddress(input.user) === false,
@@ -68,4 +63,5 @@ export const getUserProfileProcedure = os
           latest: data[0],
           previous: data.slice(1) || [],
         }; // Full UserProfileResult
-  });
+  }
+);

@@ -1,17 +1,12 @@
 // SPDX-License-Identifier: MPL-2.0
 
-import { ORPCError, os } from '@orpc/server';
-// Import original utilities until they are converted
-import { isEthereumAddress, namesResolver } from '../../../src/utils.ts';
-import {
-  ResolveUserInputSchema,
-  ResolveUserOutputSchema,
-} from '../schemas/resolve-user.ts';
+import { ORPCError } from '@orpc/server';
+import { isEthereumAddress, namesResolver } from '../../src/utils.ts';
+import { os } from '../contract-os.ts';
 
-export const resolveUserProcedure = os
-  .input(ResolveUserInputSchema)
-  .output(ResolveUserOutputSchema)
-  .handler(async ({ input }) => {
+export const resolveUserProcedure = os.utils.resolveUser.handler(
+  // biome-ignore lint/correctness/noUnusedFunctionParameters: bruh
+  async ({ input, context }) => {
     const resolveName = isEthereumAddress(input.user);
 
     let resolved: any;
@@ -41,4 +36,5 @@ export const resolveUserProcedure = os
     return resolveName
       ? { name: resolved as string, address: input.user as `0x${string}` }
       : { name: input.user as string, address: resolved as `0x${string}` };
-  });
+  }
+);

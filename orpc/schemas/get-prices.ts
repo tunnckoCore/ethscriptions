@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 
 import type { z } from 'zod';
-import { PricesResultSchema, SpeedSchema } from '../schemas/index.ts';
+import { PricesResultSchema, SpeedSchema } from './index.ts';
 
 // Input schema for getPrices procedure
 export const GetPricesInputSchema = SpeedSchema.default('normal');

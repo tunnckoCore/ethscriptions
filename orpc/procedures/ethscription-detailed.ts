@@ -1,22 +1,18 @@
 // SPDX-License-Identifier: MPL-2.0
 
-import { ORPCError, os } from '@orpc/server';
+import { ORPCError } from '@orpc/server';
 import {
   normalizeAndSortTransfers,
   normalizeResult,
   numberFormat,
   upstreamFetcher,
-} from '../../../src/utils.ts';
-import {
-  GetEthscriptionDetailedInputSchema,
-  type GetEthscriptionDetailedOutput,
-  GetEthscriptionDetailedOutputSchema,
-} from '../schemas/ethscription-detailed.ts';
+} from '../../src/utils.ts';
+import { os } from '../contract-os.ts';
+import type { GetEthscriptionDetailedOutput } from '../schemas/ethscription-detailed.ts';
 
-export const getEthscriptionDetailedProcedure = os
-  .input(GetEthscriptionDetailedInputSchema)
-  .output(GetEthscriptionDetailedOutputSchema)
-  .handler(async ({ input }) => {
+export const getEthscriptionDetailedProcedure = os.getByIdDetailed.handler(
+  // biome-ignore lint/correctness/noUnusedFunctionParameters: bruh
+  async ({ input, context }) => {
     const { id, mode, ...opts } = { ...input };
     const data: any = await upstreamFetcher(opts, id);
 
@@ -138,4 +134,5 @@ export const getEthscriptionDetailedProcedure = os
       message: 'Invalid request mode',
       status: 400,
     });
-  });
+  }
+);

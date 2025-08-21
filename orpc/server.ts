@@ -1,7 +1,7 @@
 import { RPCHandler } from '@orpc/server/fetch';
 import { Hono } from 'hono';
 import { logger } from 'hono/logger';
-import { router } from './router';
+import { router } from './router.ts';
 
 const app = new Hono();
 
@@ -12,7 +12,9 @@ app.use(logger());
 app.use('/rpc/*', async (c, next) => {
   const { matched, response } = await handler.handle(c.req.raw, {
     prefix: '/rpc',
-    context: {}, // Provide initial context if needed
+    context: {
+      headers: new Headers(c.req.raw.headers),
+    }, // Provide initial context if needed
   });
 
   if (matched) {

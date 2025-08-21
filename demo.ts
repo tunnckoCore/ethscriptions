@@ -1,8 +1,9 @@
 // import { createSafeClient } from '@orpc/client';
 // import { call, createRouterClient, os } from '@orpc/server';
 // import z from 'zod';
-import { client } from "./orpc/http.ts";
-import { sdk, unsafeSDK } from "./orpc/index.ts";
+// import { client } from "./orpc/http.ts";
+import { sdk, unsafeSDK } from './orpc/index.ts';
+import { client } from './orpc/openapi/client.ts';
 
 // DO NOT REMOVE
 // const [error, data] = await client.getDigestForData({
@@ -31,18 +32,22 @@ import { sdk, unsafeSDK } from "./orpc/index.ts";
 
 // const canInscribe = Boolean(res.exists?.[res.sha] === null);
 
-const existRes = await client.utils
-	.checkExists({
-		inputs: ["data:,wgw", "data:,dsfsdfsdfsddf"],
-		expand: true,
-		with: "current_owner",
-		only: "current_owner,transaction_hash,block_datetime",
-	})
-	.catch((e) => {
-		console.error("wut?", e);
-	});
+const res = await client.users.getCreated({ user: 'wgw' });
 
-console.log("exists", existRes);
+console.log('RESSSS>>', res);
+
+// const existRes = await client.utils
+// 	.checkExists({
+// 		inputs: ["data:,wgw", "data:,dsfsdfsdfsddf"],
+// 		expand: true,
+// 		with: "current_owner",
+// 		only: "current_owner,transaction_hash,block_datetime",
+// 	})
+// 	.catch((e) => {
+// 		console.error("wut?", e);
+// 	});
+
+// console.log("exists", existRes);
 
 // const res = await unsafeSDK.getAllEthscriptions({
 //   attachment_present: true,

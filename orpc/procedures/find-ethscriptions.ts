@@ -1,16 +1,12 @@
 // SPDX-License-Identifier: MPL-2.0
 
-import { ORPCError, os } from '@orpc/server';
-import { normalizeResult, upstreamFetcher } from '../../../src/utils.ts';
-import {
-  GetAllEthscritionsInputSchema,
-  GetAllEthscritionsOutputSchema,
-} from '../schemas/all-ethscriptions.ts';
+import { ORPCError } from '@orpc/server';
+import { normalizeResult, upstreamFetcher } from '../../src/utils.ts';
+import { os } from '../contract-os.ts';
 
-export const getAllEthscriptionsProcedure = os
-  .input(GetAllEthscritionsInputSchema)
-  .output(GetAllEthscritionsOutputSchema)
-  .handler(async ({ input }) => {
+export const findEthscriptionsProcedure = os.findEthscriptions.handler(
+  // biome-ignore lint/correctness/noUnusedFunctionParameters: bruh
+  async ({ input, context }) => {
     const opts = { ...input };
     const data: any = await upstreamFetcher(opts);
 
@@ -33,4 +29,5 @@ export const getAllEthscriptionsProcedure = os
     }
 
     return data.result.map((x: any) => normalizeResult(x, opts));
-  });
+  }
+);

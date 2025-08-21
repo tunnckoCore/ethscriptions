@@ -1,19 +1,16 @@
 // SPDX-License-Identifier: MPL-2.0
 
-import { ORPCError, os, safe } from '@orpc/server';
-import { hexToBytes, isHexValue } from '../../../src/utils.ts';
-import {
-  EstimateDataCostInputSchema,
-  EstimateDataCostOutputSchema,
-} from '../schemas/estimate-cost.ts';
-import { pricesProcedure } from './prices.ts';
+import { ORPCError, safe } from '@orpc/server';
+import { hexToBytes, isHexValue } from '../../src/utils.ts';
+import { os } from '../contract-os.ts';
+import { getPricesProcedure } from './get-prices.ts';
 
-export const estimateDataCostProcedure = os
-  .input(EstimateDataCostInputSchema)
-  .output(EstimateDataCostOutputSchema)
-  .handler(async ({ input }) => {
+export const estimateDataCostProcedure = os.utils.estimateDataCost.handler(
+  async ({ input, context }) => {
     // Get current gas prices using safe callable pattern
-    const pricesResult = await safe(pricesProcedure.callable()(input.speed));
+    const pricesResult = await safe(
+      getPricesProcedure.callable({ context })(input.speed)
+    );
 
     if (pricesResult.error) {
       throw pricesResult.error;
@@ -94,7 +91,8 @@ export const estimateDataCostProcedure = os
         status: 500,
       });
     }
-  });
+  }
+);
 
 /**
  * Calculate the input gas cost for calldata according to EIP-7623.
