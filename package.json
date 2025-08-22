@@ -1,6 +1,6 @@
 {
   "name": "ethscriptions",
-  "version": "0.11.1",
+  "version": "0.11.2",
   "license": "MPL-2.0",
   "description": "Library with utility functions for Ethscriptions. Supports for fetching user profiles, filtering ethscriptions, and resolving names & ENS builtin",
   "author": "wgw <wgw@wgw.lol>",
@@ -25,6 +25,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./src/*.ts": {
+      "types": "./src/types.ts",
+      "default": "./srctypes.ts"
     },
     "./orpc-source": {
       "types": "./orpc/index.ts",
