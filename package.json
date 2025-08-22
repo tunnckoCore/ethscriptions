@@ -16,7 +16,7 @@
   "type": "module",
   "scripts": {
     "build": "tsdown src/index.ts --dts",
-    "build:orpc": "tsdown orpc/index.ts --dts --out-dir ./dist/orpc",
+    "build:orpc": "tsdown orpc/sdk.ts --dts --out-dir ./dist/orpc",
     "prepublishOnly": "bun run build && bun run build:orpc",
     "fmt": "ultracite format"
   },

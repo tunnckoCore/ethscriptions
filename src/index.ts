@@ -730,3 +730,5 @@ export async function estimateDataCost(
     };
   }
 }
+
+export { getHeaders };
